@@ -22,9 +22,18 @@ public class EventNode {
         }
     }
 
+    public EventNode(String name)
+    {
+        this.name = name;
+        this.parents  = new ArrayList<EventNode>();
+        this.children = new ArrayList<EventNode>();
+    }
+
     public EventNode(EventNode other)
     {
         this.name = other.getName();
+        this.parents = new ArrayList<EventNode>();
+        this.children = new ArrayList<EventNode>();
         for(int i =0; i < other.parents.size(); i++)
         {
           this.parents.add(new EventNode(other.parents.get(i)));
@@ -34,6 +43,17 @@ public class EventNode {
             this.children.add(new EventNode(other.children.get(i)));
         }
     }
+
+    public void addParent(EventNode parent)
+    {
+        this.parents.add(new EventNode(parent));
+    }
+
+    public void addChild(EventNode child)
+    {
+        this.children.add(new EventNode(child));
+    }
+
 
     public boolean parentContain(String event)
     {
@@ -97,6 +117,26 @@ public class EventNode {
         {
             this.children.add(new EventNode(children.get(i)));
         }
+    }
+
+    public String toString()
+    {
+
+        String toRet ="name: ";
+
+        toRet += this.name;
+        toRet +="\n children: ";
+        for(int i =0; i < this.children.size();i++)
+        {
+            toRet += this.children.get(i).getName() + ",";
+        }
+        toRet += "\n Parents: ";
+        for(int i =0; i < this.parents.size();i++)
+        {
+            toRet += this.parents.get(i).getName() + ",";
+        }
+        return toRet;
+
     }
 
 
