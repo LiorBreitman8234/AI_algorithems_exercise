@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -13,8 +14,20 @@ public class BayesBall {
     {
         int index = network.containsAndIndex(source);
         EventNode eventSource = network.nodesInNetwork.get(index);
+        this.source = eventSource.getName();
         index = network.containsAndIndex(dest);
         EventNode eventDest = network.nodesInNetwork.get(index);
+        this.dest = eventDest.getName();
+        this.network = network;
+        if(given != null)
+        {
+            for(int i =0; i < given.size();i++)
+            {
+                index = network.containsAndIndex(given.get(i));
+                this.given.add(network.nodesInNetwork.get(index).getName());
+            }
+        }
+
 
     }
 

@@ -12,14 +12,21 @@ public class EventNode {
     public EventNode(String name, ArrayList<EventNode> parents, ArrayList<EventNode> childs)
     {
         this.name = name;
-        for(int i =0 ;i < parents.size();i++)
+        if(parents!=null)
         {
-            this.parents.add(new EventNode(parents.get(i)));
+            for(int i =0 ;i < parents.size();i++)
+            {
+                this.parents.add(new EventNode(parents.get(i)));
+            }
         }
-        for(int i =0 ;i <childs.size();i++)
+        if(childs!= null)
         {
-            this.children.add(new EventNode(children.get(i)));
+            for(int i =0 ;i <childs.size();i++)
+            {
+                this.children.add(new EventNode(children.get(i)));
+            }
         }
+
     }
 
     public EventNode(String name)
@@ -123,7 +130,6 @@ public class EventNode {
     {
 
         String toRet ="name: ";
-
         toRet += this.name;
         toRet +="\n children: ";
         for(int i =0; i < this.children.size();i++)
