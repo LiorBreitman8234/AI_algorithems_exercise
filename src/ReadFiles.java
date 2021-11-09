@@ -1,4 +1,6 @@
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,11 +14,38 @@ import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 
-public class ReadXML {
+public class ReadFiles {
 
-    public static void main(String[] args) {
-        String filename = "src/alarm_net.xml";
-        readXML(filename);
+    public static inputQueries readTXT(String filename)
+    {
+        ArrayList<String> queries = new ArrayList<String>();
+        String xmlFile = "";
+        try
+        {
+            boolean isNameOfFile = true;
+            File file = new File(filename);
+            FileReader reader = new FileReader(file);
+            BufferedReader bReader = new BufferedReader(reader);
+            String line;
+            while((line = bReader.readLine())!=null)
+            {
+                if(isNameOfFile)
+                {
+                    xmlFile = line;
+                    isNameOfFile = false;
+                }
+                else
+                {
+                    queries.add(line);
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        inputQueries input = new inputQueries(xmlFile,queries);
+        return input;
 
     }
 

@@ -32,6 +32,11 @@ public class BayesBall {
 
     }
 
+    public void readQuery(String query)
+    {
+
+    }
+
 
     public boolean bayesBallTraversal(EventNode Current, EventNode from)
     {
