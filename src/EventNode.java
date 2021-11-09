@@ -96,7 +96,7 @@ public class EventNode {
 
     public ArrayList<EventNode> getParents() {
         ArrayList<EventNode> parents = new ArrayList<EventNode>();
-        for(int i =0; i < this.children.size();i++)
+        for(int i =0; i < this.parents.size();i++)
         {
             parents.add(new EventNode(this.parents.get(i)));
         }
@@ -104,6 +104,7 @@ public class EventNode {
     }
 
     public void setParents(ArrayList<EventNode> parents) {
+        this.parents = new ArrayList<EventNode>();
         for(int i =0; i < parents.size();i++)
         {
             this.parents.add(new EventNode(parents.get(i)));
@@ -120,6 +121,7 @@ public class EventNode {
     }
 
     public void setChildren(ArrayList<EventNode> children) {
+        this.children = new ArrayList<EventNode>();
         for(int i =0; i < children.size();i++)
         {
             this.children.add(new EventNode(children.get(i)));

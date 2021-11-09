@@ -27,7 +27,33 @@ public class BayesianNetwork {
             }
             nodesInNetwork.add(event);
         }
+        fixNetwork();
     }
+
+    private void fixNetwork()
+    {
+        for(int i =0; i < this.nodesInNetwork.size();i++)
+        {
+            EventNode Curr = this.nodesInNetwork.get(i);
+            ArrayList<EventNode> children = new ArrayList<EventNode>();
+            for(int j =0; j < Curr.getChildren().size();j++)
+            {
+                int indexChild = containsAndIndex(Curr.getChildren().get(j).getName());
+                EventNode toAdd = this.nodesInNetwork.get(indexChild);
+                children.add(toAdd);
+            }
+            Curr.setChildren(children);
+            ArrayList<EventNode> parents = new ArrayList<EventNode>();
+            for(int j =0; j < Curr.getParents().size();j++)
+            {
+                int indexParent = containsAndIndex(Curr.getParents().get(j).getName());
+                EventNode toAdd = this.nodesInNetwork.get(indexParent);
+                parents.add(toAdd);
+            }
+            Curr.setParents(parents);
+        }
+    }
+
 
     public int containsAndIndex(String eventName)
     {

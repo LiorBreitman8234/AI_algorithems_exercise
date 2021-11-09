@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -8,6 +10,10 @@ public class Main {
         {
             System.out.println(BN.nodesInNetwork.get(i).toString());
         }
-        BayesBall BB = new BayesBall("B","E",null,BN);
+        ArrayList<String> given = new ArrayList<String>();
+        given.add("J");
+        BayesBall BB = new BayesBall("B","E",given,BN);
+        boolean flag = BB.bayesBallTraversal(BB.source,null);
+        System.out.println(BB.bayesBallTraversal(BB.source,null));
     }
 }
