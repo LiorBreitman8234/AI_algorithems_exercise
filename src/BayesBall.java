@@ -1,3 +1,4 @@
+import java.awt.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -5,33 +6,41 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 public class BayesBall {
-    String source;
-    String dest;
-    ArrayList<String> given;
+    EventNode source;
+    EventNode dest;
+    ArrayList<EventNode> given;
     BayesianNetwork network;
 
     public BayesBall(String source, String dest,ArrayList<String> given, BayesianNetwork network)
     {
-        int index = network.containsAndIndex(source);
-        EventNode eventSource = network.nodesInNetwork.get(index);
-        this.source = eventSource.getName();
-        index = network.containsAndIndex(dest);
-        EventNode eventDest = network.nodesInNetwork.get(index);
-        this.dest = eventDest.getName();
-        this.network = network;
-        if(given != null)
+        this.network = new BayesianNetwork();
+        for(int i =0; i < network.nodesInNetwork.size();i++)
         {
-            for(int i =0; i < given.size();i++)
-            {
-                index = network.containsAndIndex(given.get(i));
-                this.given.add(network.nodesInNetwork.get(index).getName());
-            }
+            this.network.nodesInNetwork.add(network.nodesInNetwork.get(i));
         }
-
-
+        this.source = this.network.nodesInNetwork.get(this.network.containsAndIndex(source));
+        this.dest = this.network.nodesInNetwork.get(this.network.containsAndIndex(dest));
+        for(int i =0; i < given.size();i++)
+        {
+            EventNode curr = this.network.nodesInNetwork.get(this.network.containsAndIndex(given.get(i)));
+            this.given.add(new EventNode(curr));
+        }
     }
 
 
+    public boolean bayesBallTraversal(String Current, String from)
+    {
+        if(Current.equals(source))
+        {
+            return true;
+        }
+        if(given.contains(Current))
+        {
+
+        }
+
+        return false;
+    }
     public void bfs(EventNode source, EventNode dest)
     {
         HashMap<String, Integer> explored = new HashMap<String,Integer>();
