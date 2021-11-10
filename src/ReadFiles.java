@@ -3,8 +3,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import javax.print.Doc;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -16,7 +14,7 @@ import org.xml.sax.SAXException;
 
 public class ReadFiles {
 
-    public static inputQueries readTXT(String filename)
+    public static queriesHandler readTXT(String filename)
     {
         ArrayList<String> queries = new ArrayList<String>();
         String xmlFile = "";
@@ -44,7 +42,7 @@ public class ReadFiles {
         {
             e.printStackTrace();
         }
-        inputQueries input = new inputQueries(xmlFile,queries);
+        queriesHandler input = new queriesHandler(xmlFile,queries);
         return input;
 
     }
@@ -60,8 +58,6 @@ public class ReadFiles {
             Document doc = builder.parse(filename);
             doc.getDocumentElement().normalize();
 
-            System.out.println("Net name:" + doc.getDocumentElement().getNodeName());
-            System.out.println("------");
             NodeList variable_list = doc.getElementsByTagName("VARIABLE");
             NodeList definition_list = doc.getElementsByTagName("DEFINITION");
 
