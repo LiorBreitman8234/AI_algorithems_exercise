@@ -10,12 +10,12 @@ public class BayesianNetwork {
 
     public void buildNetwork(String fileName)
     {
-        ArrayList<MyPair> pairs = ReadFiles.readXML(fileName);
-        for(int i =0; i < pairs.size();i++)
+        ArrayList<nodeBuilderHelper> helpers = ReadFiles.readXML(fileName);
+        for(int i =0; i < helpers.size();i++)
         {
-            String name = pairs.get(i).getName();
+            String name = helpers.get(i).getName();
             EventNode event = new EventNode(name);
-            String[] parents = pairs.get(i).getGiven();
+            String[] parents = helpers.get(i).getGiven();
             for(int j = 0; j < parents.length;j++)
             {
                 int index = containsAndIndex(parents[j]);

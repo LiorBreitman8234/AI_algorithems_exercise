@@ -3,6 +3,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -47,10 +48,10 @@ public class ReadFiles {
 
     }
 
-    public static ArrayList<MyPair> readXML(String filename)
+    public static ArrayList<nodeBuilderHelper> readXML(String filename)
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        ArrayList<MyPair> nodes_preview = new ArrayList<MyPair>();
+        ArrayList<nodeBuilderHelper> nodes_preview = new ArrayList<nodeBuilderHelper>();
         try {
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             DocumentBuilder builder = factory.newDocumentBuilder();
@@ -69,15 +70,24 @@ public class ReadFiles {
                     Element element_definition = (Element) definition_node;
                     String eventName = element_variable.getElementsByTagName("NAME").item(0).getTextContent();
                     String[] parents = new String[element_definition.getElementsByTagName("GIVEN").getLength()];
+                    String[] outcomes = new String[element_variable.getElementsByTagName("OUTCOME").getLength()];
+                    String values = element_definition.getElementsByTagName("TABLE").item(0).getTextContent();
                     for (int j = 0; j < parents.length; j++)
                     {
                         String parent = element_definition.getElementsByTagName("GIVEN").item(j).getTextContent();
                         parents[j] = parent;
                     }
-                    MyPair pair = new MyPair(eventName, parents);
-                    //System.out.println("name: " + eventName);
-                    //System.out.println("Parents: " + Arrays.toString(parents));
-                    nodes_preview.add(pair);
+                    for(int j =0; j < outcomes.length;j++)
+                    {
+                        String outcome = element_variable.getElementsByTagName("OUTCOME").item(j).getTextContent();
+                        outcomes[j] = outcome;
+                    }
+                    nodeBuilderHelper helper = new nodeBuilderHelper(eventName, parents, outcomes, values);
+                    System.out.println("name: " + eventName);
+                    System.out.println("Parents: " + Arrays.toString(parents));
+                    System.out.println("outcomes: " + Arrays.toString(outcomes));
+                    System.out.println("values: "+values);
+                    nodes_preview.add(helper);
 
                 }
             }

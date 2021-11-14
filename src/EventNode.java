@@ -5,11 +5,12 @@ import java.util.Collections;
 
 public class EventNode {
     private String name;
+    private ArrayList<String> outcomes;
     private ArrayList<EventNode> parents;
     private ArrayList<EventNode> children;
     //public cpt table
 
-    public EventNode(String name, ArrayList<EventNode> parents, ArrayList<EventNode> childs)
+    public EventNode(String name, ArrayList<EventNode> parents, ArrayList<EventNode> childs, ArrayList<String> outcomes)
     {
         this.name = name;
         if(parents!=null)
@@ -26,6 +27,13 @@ public class EventNode {
                 this.children.add(new EventNode(children.get(i)));
             }
         }
+        if(outcomes!= null)
+        {
+            for(int i =0; i < outcomes.size();i++)
+            {
+                this.outcomes.add(outcomes.get(i));
+            }
+        }
 
     }
 
@@ -34,6 +42,7 @@ public class EventNode {
         this.name = name;
         this.parents  = new ArrayList<EventNode>();
         this.children = new ArrayList<EventNode>();
+        this.outcomes = new ArrayList<String>();
     }
 
     public EventNode(EventNode other)
@@ -41,6 +50,7 @@ public class EventNode {
         this.name = other.getName();
         this.parents = new ArrayList<EventNode>();
         this.children = new ArrayList<EventNode>();
+        this.outcomes = new ArrayList<String>();
         for(int i =0; i < other.parents.size(); i++)
         {
           this.parents.add(new EventNode(other.parents.get(i)));
@@ -49,6 +59,11 @@ public class EventNode {
         {
             this.children.add(new EventNode(other.children.get(i)));
         }
+        for(int i =0; i < other.outcomes.size();i++)
+        {
+            this.outcomes.add(other.outcomes.get(i));
+        }
+
     }
 
     public void addParent(EventNode parent)
@@ -59,6 +74,11 @@ public class EventNode {
     public void addChild(EventNode child)
     {
         this.children.add(new EventNode(child));
+    }
+
+    public void addOutcome(String outcome)
+    {
+        this.outcomes.add(outcome);
     }
 
 
@@ -72,6 +92,18 @@ public class EventNode {
             }
         }
         return false;
+    }
+
+    public ArrayList<String> getOutcomes() {
+        return outcomes;
+    }
+
+    public void setOutcomes(ArrayList<String> outcomes) {
+        this.outcomes = new ArrayList<String>();
+        for(int i =0; i < outcomes.size();i++)
+        {
+            this.outcomes.add(outcomes.get(i));
+        }
     }
 
     public boolean childrenContain(String event)

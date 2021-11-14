@@ -16,8 +16,8 @@ public class Main {
             System.out.println(handler.queries.get(i));
         }
         BN.buildNetwork(filename);
-        ArrayList<String> answers = handler.handle(BN);
-        System.out.println(answers.toString());
+//        ArrayList<String> answers = handler.handle(BN);
+//        System.out.println(answers.toString());
 //        for(int i = 0; i < BN.nodesInNetwork.size();i++)
 //        {
 //            System.out.println(BN.nodesInNetwork.get(i).toString());
