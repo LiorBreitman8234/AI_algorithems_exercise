@@ -7,15 +7,15 @@ public class Main {
 
 
         BayesianNetwork BN = new BayesianNetwork();
-        String filename = "src/alarm_net.xml";
-        String txtfile = "src/input.txt";
+        String txtfile = "src/input2.txt";
         queriesHandler handler = ReadFiles.readTXT(txtfile);
         System.out.println(handler.filename);
         for(int i = 0; i < handler.queries.size(); i++)
         {
             System.out.println(handler.queries.get(i));
         }
-        BN.buildNetwork(filename);
+        BN.buildNetwork(handler.filename);
+        System.out.println(handler.handle(BN));
 //        ArrayList<String> answers = handler.handle(BN);
 //        System.out.println(answers.toString());
 //        for(int i = 0; i < BN.nodesInNetwork.size();i++)

@@ -11,10 +11,17 @@ public class BayesianNetwork {
     public void buildNetwork(String fileName)
     {
         ArrayList<nodeBuilderHelper> helpers = ReadFiles.readXML(fileName);
+        for(int i =0; i < helpers.size(); i++)
+        {
+            String name = helpers.get(i).getName();
+            EventNode event =new EventNode(name);
+            nodesInNetwork.add(event);
+        }
         for(int i =0; i < helpers.size();i++)
         {
             String name = helpers.get(i).getName();
-            EventNode event = new EventNode(name);
+            int indexCurr = containsAndIndex(name);
+            EventNode event = nodesInNetwork.get(indexCurr);
             String[] parents = helpers.get(i).getGiven();
             for(int j = 0; j < parents.length;j++)
             {
@@ -25,7 +32,6 @@ public class BayesianNetwork {
                     nodesInNetwork.get(index).addChild(event);
                 }
             }
-            nodesInNetwork.add(event);
         }
     }
 

@@ -10,9 +10,11 @@ public class BayesBall {
     EventNode dest;
     ArrayList<String> given;
     BayesianNetwork network;
+    ArrayList<String> pastRoutes;
 
     public BayesBall(String source, String dest,ArrayList<String> given, BayesianNetwork network)
     {
+        this.pastRoutes = new ArrayList<String>();
         this.network = new BayesianNetwork();
         this.given = new ArrayList<String>();
         for(int i =0; i < network.nodesInNetwork.size();i++)
@@ -40,6 +42,19 @@ public class BayesBall {
 
     public boolean bayesBallTraversal(EventNode Current, EventNode from)
     {
+        if(from !=  null)
+        {
+            String path = Current.getName() +","+ from.getName();
+            if(Current.childrenContain(from.getName()))
+            {
+                path+=",c";
+            }
+            else
+            {
+                path+=",p";
+            }
+            pastRoutes.add(path);
+        }
         if(Current.getName().equals(dest.getName()))
         {
             return true;
@@ -51,7 +66,11 @@ public class BayesBall {
                 for (int i = 0; i < Current.getParents().size(); i++) {
                     String next = Current.getParents().get(i).getName();
                     EventNode goTo = network.nodesInNetwork.get(network.containsAndIndex(next));
-                    flag = bayesBallTraversal(goTo, Current);
+                    String check = goTo.getName() + "," + Current.getName() + ",c";
+                    if(!pastRoutes.contains(check))
+                    {
+                        flag = bayesBallTraversal(goTo, Current);
+                    }
                     if (flag) {
                         return true;
                     }
@@ -63,11 +82,15 @@ public class BayesBall {
         {
             if(from == null)
             {
-                boolean flag;
+                boolean flag = false;
                 for (int i = 0; i < Current.getParents().size(); i++) {
                     String next = Current.getParents().get(i).getName();
                     EventNode goTo = this.network.nodesInNetwork.get(this.network.containsAndIndex(next));
-                    flag = bayesBallTraversal(goTo, Current);
+                    String check = goTo.getName() + "," + Current.getName() + ",c";
+                    if(!pastRoutes.contains(check))
+                    {
+                        flag = bayesBallTraversal(goTo, Current);
+                    }
                     if (flag) {
                         return true;
                     }
@@ -77,7 +100,11 @@ public class BayesBall {
                 {
                     String next = Current.getChildren().get(i).getName();
                     EventNode goTo = network.nodesInNetwork.get(network.containsAndIndex(next));
-                    flag = bayesBallTraversal(goTo,Current);
+                    String check = goTo.getName() + "," + Current.getName() + ",p";
+                    if(!pastRoutes.contains(check))
+                    {
+                        flag = bayesBallTraversal(goTo, Current);
+                    }
                     if(flag)
                     {
                         return true;
@@ -91,7 +118,11 @@ public class BayesBall {
                 for (int i = 0; i < Current.getParents().size(); i++) {
                     String next = Current.getParents().get(i).getName();
                     EventNode goTo = network.nodesInNetwork.get(network.containsAndIndex(next));
-                    flag = bayesBallTraversal(goTo, Current);
+                    String check = goTo.getName() + "," + Current.getName() + ",c";
+                    if(!pastRoutes.contains(check))
+                    {
+                        flag = bayesBallTraversal(goTo, Current);
+                    }
                     if (flag) {
                         return true;
                     }
@@ -100,7 +131,11 @@ public class BayesBall {
                 {
                     String next = Current.getChildren().get(i).getName();
                     EventNode goTo = network.nodesInNetwork.get(network.containsAndIndex(next));
-                    flag = bayesBallTraversal(goTo,Current);
+                    String check = goTo.getName() + "," + Current.getName() + ",p";
+                    if(!pastRoutes.contains(check))
+                    {
+                        flag = bayesBallTraversal(goTo, Current);
+                    }
                     if(flag)
                     {
                         return true;
@@ -115,7 +150,11 @@ public class BayesBall {
                 {
                     String next = Current.getChildren().get(i).getName();
                     EventNode goTo = network.nodesInNetwork.get(network.containsAndIndex(next));
-                    flag = bayesBallTraversal(goTo,Current);
+                    String check = goTo.getName() + "," + Current.getName() + ",p";
+                    if(!pastRoutes.contains(check))
+                    {
+                        flag = bayesBallTraversal(goTo, Current);
+                    }
                     if(flag)
                     {
                         return true;
