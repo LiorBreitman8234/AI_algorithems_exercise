@@ -56,7 +56,7 @@ public class ReadFiles {
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             DocumentBuilder builder = factory.newDocumentBuilder();
 
-            Document doc = builder.parse("src\\" +filename);
+            Document doc = builder.parse("src\\"+filename);
             doc.getDocumentElement().normalize();
 
             NodeList variable_list = doc.getElementsByTagName("VARIABLE");
@@ -83,10 +83,6 @@ public class ReadFiles {
                         outcomes[j] = outcome;
                     }
                     nodeBuilderHelper helper = new nodeBuilderHelper(eventName, parents, outcomes, values);
-                    System.out.println("name: " + eventName);
-                    System.out.println("Parents: " + Arrays.toString(parents));
-                    System.out.println("outcomes: " + Arrays.toString(outcomes));
-                    System.out.println("values: "+values);
                     nodes_preview.add(helper);
 
                 }

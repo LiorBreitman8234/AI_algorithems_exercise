@@ -15,18 +15,11 @@ public class Main {
             System.out.println(handler.queries.get(i));
         }
         BN.buildNetwork(handler.filename);
-        BN.nodesInNetwork.get(2).PrintCPT();
+//        BN.nodesInNetwork.get(3).PrintCPT();
+        for(int i =0; i < BN.nodesInNetwork.size();i++)
+        {
+            BN.nodesInNetwork.get(i).PrintCPT();
+        }
 //        System.out.println(handler.handle(BN));
-//        ArrayList<String> answers = handler.handle(BN);
-//        System.out.println(answers.toString());
-//        for(int i = 0; i < BN.nodesInNetwork.size();i++)
-//        {
-//            System.out.println(BN.nodesInNetwork.get(i).toString());
-//        }
-//        ArrayList<String> given = new ArrayList<String>();
-//        given.add("J");
-//        BayesBall BB = new BayesBall("B","E",given,BN);
-//        boolean flag = BB.bayesBallTraversal(BB.source,null);
-        //System.out.println(BB.bayesBallTraversal(BB.source,null));
     }
 }

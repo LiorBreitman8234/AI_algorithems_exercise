@@ -1,3 +1,4 @@
+import javax.swing.plaf.IconUIResource;
 import java.util.ArrayList;
 
 public class CPT {
@@ -61,6 +62,9 @@ public class CPT {
 
     public void printCPT()
     {
+
+        System.out.println("CPT of: "+ this.name);
+        System.out.println("---------------------------------------");
         for(int i =0; i < given.size();i++)
         {
             System.out.print(this.given.get(i) + "   ");
