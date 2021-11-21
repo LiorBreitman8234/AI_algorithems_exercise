@@ -10,7 +10,7 @@ public class CPT {
 
     public CPT(EventNode mainNode)
     {
-        this.name =mainNode.getName();
+        this.name = mainNode.getName();
         String[] valuesString = mainNode.getValues().split(" ");
         this.values = new ArrayList<Double>();
         this.given = new ArrayList<String>();
@@ -58,6 +58,18 @@ public class CPT {
                 countOutcomes *= amountOfOutcomes;
             }
         }
+    }
+
+    public int getIndexParent(String name)
+    {
+        for(int i =0; i < this.given.size() ;i++)
+        {
+            if(given.get(i) == name)
+            {
+                return i;
+            }
+        }
+        return -1;
     }
 
     public void printCPT()
