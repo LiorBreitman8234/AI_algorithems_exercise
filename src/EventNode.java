@@ -8,7 +8,8 @@ public class EventNode {
     private ArrayList<String> outcomes;
     private ArrayList<EventNode> parents;
     private ArrayList<EventNode> children;
-    //public cpt table
+    private String values;//one step before building cpt
+    private CPT cpt;
 
     public EventNode(String name, ArrayList<EventNode> parents, ArrayList<EventNode> childs, ArrayList<String> outcomes)
     {
@@ -66,6 +67,16 @@ public class EventNode {
 
     }
 
+    public void BuildCPT()
+    {
+        this.cpt = new CPT(this);
+    }
+
+    public void PrintCPT()
+    {
+        this.cpt.printCPT();
+    }
+
     public void addParent(EventNode parent)
     {
         this.parents.add(new EventNode(parent));
@@ -79,6 +90,14 @@ public class EventNode {
     public void addOutcome(String outcome)
     {
         this.outcomes.add(outcome);
+    }
+
+    public String getValues() {
+        return values;
+    }
+
+    public void setValues(String values) {
+        this.values = values;
     }
 
 

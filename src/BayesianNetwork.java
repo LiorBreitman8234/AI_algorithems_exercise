@@ -15,6 +15,11 @@ public class BayesianNetwork {
         {
             String name = helpers.get(i).getName();
             EventNode event =new EventNode(name);
+            for(int j =0; j < helpers.get(i).getOutcomes().length;j++)
+            {
+                event.addOutcome(helpers.get(i).getOutcomes()[j]);
+            }
+            event.setValues(helpers.get(i).values);
             nodesInNetwork.add(event);
         }
         for(int i =0; i < helpers.size();i++)
@@ -33,7 +38,17 @@ public class BayesianNetwork {
                 }
             }
         }
+        BuildCPTForNetwork();
     }
+
+    public void BuildCPTForNetwork()
+    {
+       for(int i =0; i < this.nodesInNetwork.size();i++)
+       {
+           this.nodesInNetwork.get(i).BuildCPT();
+       }
+    }
+
 
     public int containsAndIndex(String eventName)
     {
