@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class queriesHandler {
 
@@ -48,9 +49,22 @@ public class queriesHandler {
                     responses.add("yes");
                 }
             }
-            else//probability query
+            else
             {
-                //do nothing for now
+                //P(B=T|J=T,M=T) A-E
+                String[] queryHiddenSplit = currentQuery.split(" ");
+                String[] hidden = queryHiddenSplit[1].split("-");
+                String[] splitQuery = queryHiddenSplit[0].split("\\(");
+                String[] splitQueryEvidence = splitQuery[1].split("\\|");
+                String Query = splitQueryEvidence[0];
+                String[] evidenceFirst = splitQueryEvidence[1].split("\\)");
+                String[] evidence = evidenceFirst[0].split(",");
+                System.out.println(Query);
+                System.out.println(Arrays.toString(evidence));
+                System.out.println(Arrays.toString(hidden));
+
+
+
             }
         }
 

@@ -29,6 +29,13 @@ public class VariableElimination {
             factors.add(new Factor(node,given,count++));
         }
     }
+
+    public VariableElimination()
+    {
+        this.hidden = new String[0];
+    }
+
+
     public ArrayList<Factor> getFactors(String event)
     {
         ArrayList<Factor> factors = new ArrayList<Factor>();
@@ -63,6 +70,7 @@ public class VariableElimination {
             given.add(hidden[i]);
         }
         Factor newFactor = new Factor();
+        newFactor.setGiven(given);
         if(f1.compareTo(f2) > 0)
         {
             for(rowInCPT firstRow: f1.getRows())
@@ -71,7 +79,7 @@ public class VariableElimination {
                 {
                     if(firstRow.rowsMatch(secondRow,commonColumns))
                     {
-                        joinRows(firstRow, secondRow);
+                        newFactor.addRow(joinRows(firstRow, secondRow));
                     }
 
                 }
@@ -83,17 +91,25 @@ public class VariableElimination {
             {
                 for(rowInCPT secondRow:f1.getRows())
                 {
-                    newFactor.addRow(joinRows(firstRow, secondRow));
+                    if(firstRow.rowsMatch(secondRow,commonColumns))
+                    {
+                        newFactor.addRow(joinRows(firstRow, secondRow));
+                    }
                 }
             }
         }
+        newFactor.setColumns(newFactor.getRows().get(0).getColumns());
+        newFactor.FactorOf = f2.FactorOf;
+        newFactor.nodeOfFactor = f2.nodeOfFactor;
+        newFactor.setCount(this.count++);
+
         return newFactor;
     }
 
     private rowInCPT joinRows(rowInCPT firstRow, rowInCPT secondRow) {
         ArrayList<String> columns = new ArrayList<String>();
         ArrayList<String> columnValues = new ArrayList<String>();
-        for(int i =0; i < firstRow.getColumns().size();i++)
+        for(int i =0; i < firstRow.getColumns().size() ;i++)
         {
             if(!columns.contains(firstRow.getColumns().get(i)))
             {

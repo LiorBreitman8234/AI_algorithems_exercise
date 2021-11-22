@@ -30,6 +30,7 @@ public class rowInCPT {
         {
             this.columnsValues.add(row.getColumnValues().get(i));
         }
+        this.columns = row.getColumns();
     }
 
     public ArrayList<String> getColumns() {

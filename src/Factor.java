@@ -50,10 +50,10 @@ public class Factor implements Comparable<Factor> {
 
     public Factor()
     {
-        ArrayList<String> parents = new ArrayList<String>();
-        ArrayList<String> given = new ArrayList<String>();
-        ArrayList<rowInCPT> rows = new ArrayList<rowInCPT>();
-        ArrayList<Double> values = new ArrayList<Double>();
+        this.columns = new ArrayList<String>();
+        this.given = new ArrayList<String>();
+        this.rows = new ArrayList<rowInCPT>();
+        this.values = new ArrayList<Double>();
     }
 
 

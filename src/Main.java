@@ -15,16 +15,22 @@ public class Main {
             System.out.println(handler.queries.get(i));
         }
         BN.buildNetwork(handler.filename);
-//        BN.nodesInNetwork.get(3).PrintCPT();
+        handler.handle(BN);
         for(int i =0; i < BN.nodesInNetwork.size();i++)
         {
             BN.nodesInNetwork.get(i).PrintCPT();
         }
         ArrayList<String> given = new ArrayList<String>();
-        given.add("B=T");
-        given.add("E=T");
-        Factor f = new Factor(BN.nodesInNetwork.get(2),given,1);
-        f.printFactor();
+        given.add("J=T");
+        Factor f1 = new Factor(BN.nodesInNetwork.get(3),given,1);
+        f1.printFactor();
+        given = new ArrayList<String>();
+        given.add("M=T");
+        Factor f2 = new Factor(BN.nodesInNetwork.get(4),given,2);
+        f2.printFactor();
+
+//        VariableElimination VE = new VariableElimination(BN,"P(B=T|J=T,M=T) A-E",);
+//        VE.join(f1,f2).printFactor();
        // System.out.println(handler.handle(BN));
     }
 }
