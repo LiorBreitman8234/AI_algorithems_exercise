@@ -101,6 +101,11 @@ public class EventNode {
     }
 
 
+    public CPT getCPT()
+    {
+        return this.cpt;
+    }
+
     public boolean parentContain(String event)
     {
         for(int i =0; i < this.parents.size();i++)

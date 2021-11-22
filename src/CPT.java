@@ -3,8 +3,8 @@ import java.util.ArrayList;
 
 public class CPT {
 
-    private String name;
-    private ArrayList<String> given;
+    public String name;
+    public ArrayList<String> given;
     public ArrayList<ArrayList<String>> outcomes;
     public ArrayList<Double> values;
 
@@ -64,7 +64,7 @@ public class CPT {
     {
         for(int i =0; i < this.given.size() ;i++)
         {
-            if(given.get(i) == name)
+            if(given.get(i).equals(name))
             {
                 return i;
             }
@@ -82,7 +82,9 @@ public class CPT {
             System.out.print(this.given.get(i) + "   ");
         }
         System.out.print(this.name+ "   ");
-        System.out.println("value\n");
+        System.out.println("value");
+        System.out.println("---------------------------------------");
+
         for(int i =0; i < values.size();i++)
         {
             for(int j =0; j < this.outcomes.size();j++)

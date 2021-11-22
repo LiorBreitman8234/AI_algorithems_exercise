@@ -20,6 +20,11 @@ public class Main {
         {
             BN.nodesInNetwork.get(i).PrintCPT();
         }
+        ArrayList<String> given = new ArrayList<String>();
+        given.add("B=T");
+        given.add("E=T");
+        Factor f = new Factor(BN.nodesInNetwork.get(2),given,1);
+        System.out.println(f.FactorOf);
 //        System.out.println(handler.handle(BN));
     }
 }

@@ -56,7 +56,7 @@ public class ReadFiles {
             factory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
             DocumentBuilder builder = factory.newDocumentBuilder();
 
-            Document doc = builder.parse("src\\"+filename);
+            Document doc = builder.parse(filename);
             doc.getDocumentElement().normalize();
 
             NodeList variable_list = doc.getElementsByTagName("VARIABLE");
