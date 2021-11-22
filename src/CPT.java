@@ -5,11 +5,12 @@ public class CPT {
 
     public String name;
     public ArrayList<String> given;
-    public ArrayList<ArrayList<String>> outcomes;
+    public ArrayList<rowInCPT> rows;
     public ArrayList<Double> values;
 
     public CPT(EventNode mainNode)
     {
+        ArrayList<ArrayList<String>> outcomes;
         this.name = mainNode.getName();
         String[] valuesString = mainNode.getValues().split(" ");
         this.values = new ArrayList<Double>();
@@ -18,16 +19,16 @@ public class CPT {
         {
             values.add(Double.parseDouble(valuesString[i]));
         }
-        this.outcomes = new ArrayList<ArrayList<String>>();
+        outcomes = new ArrayList<ArrayList<String>>();
         ArrayList<EventNode> parents = mainNode.getParents();
         for(int i =0; i < parents.size();i++)
         {
-            this.outcomes.add(new ArrayList<String>());
+            outcomes.add(new ArrayList<String>());
             this.given.add(parents.get(i).getName());
         }
-        this.outcomes.add(new ArrayList<String>());// for the current node
+        outcomes.add(new ArrayList<String>());// for the current node
         int countOutcomes =0;
-        for(int i =this.outcomes.size()-1; i >=0;i--)
+        for(int i =outcomes.size()-1; i >=0;i--)
         {
             if(countOutcomes ==0)
             {
@@ -37,7 +38,7 @@ public class CPT {
                 {
                     int amountOfOutcomes = mainNode.getOutcomes().size();
                     int currentOutcomeIndex = counter%amountOfOutcomes;
-                    this.outcomes.get(i).add(mainNode.getOutcomes().get(counter%amountOfOutcomes));
+                    outcomes.get(i).add(mainNode.getOutcomes().get(counter%amountOfOutcomes));
                     counter++;
                 }
                 countOutcomes += mainNode.getOutcomes().size();
@@ -47,16 +48,26 @@ public class CPT {
                 EventNode currParent = parents.get(i);
                 int amountOfOutcomes = currParent.getOutcomes().size();
                 int counter = 0;
-                while(this.outcomes.get(i).size() < this.values.size())
+                while(outcomes.get(i).size() < this.values.size())
                 {
                     for(int j =0; j < countOutcomes;j++)
                     {
-                        this.outcomes.get(i).add(currParent.getOutcomes().get(counter%amountOfOutcomes));
+                        outcomes.get(i).add(currParent.getOutcomes().get(counter%amountOfOutcomes));
                     }
                     counter++;
                 }
                 countOutcomes *= amountOfOutcomes;
             }
+        }
+        this.rows = new ArrayList<rowInCPT>();
+        for(int i =0; i < this.values.size();i++)
+        {
+            ArrayList<String> combination = new ArrayList<String>();
+            for(int j =0; j < outcomes.size();j++)
+            {
+                combination.add(outcomes.get(j).get(i));
+            }
+            this.rows.add(new rowInCPT(combination,this.values.get(i)));
         }
     }
 
@@ -74,8 +85,7 @@ public class CPT {
 
     public void printCPT()
     {
-
-        System.out.println("CPT of: "+ this.name);
+        System.out.println("\nCPT of: "+ this.name);
         System.out.println("---------------------------------------");
         for(int i =0; i < given.size();i++)
         {
@@ -85,13 +95,9 @@ public class CPT {
         System.out.println("value");
         System.out.println("---------------------------------------");
 
-        for(int i =0; i < values.size();i++)
-        {
-            for(int j =0; j < this.outcomes.size();j++)
-            {
-                System.out.print(this.outcomes.get(j).get(i) + "   ");
-            }
-            System.out.println(this.values.get(i) + "\n");
-        }
+       for(int i =0; i < this.rows.size();i++)
+       {
+           System.out.println(this.rows.get(i).toString());
+       }
     }
 }

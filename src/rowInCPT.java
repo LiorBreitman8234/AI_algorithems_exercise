@@ -17,6 +17,16 @@ public class rowInCPT {
         }
     }
 
+    public rowInCPT(rowInCPT row)
+    {
+        this.value = row.getValue();
+        this.columns = new ArrayList<String>();
+        for(int i =0; i < row.getColumns().size();i++)
+        {
+            this.columns.add(row.getColumns().get(i));
+        }
+    }
+
     public ArrayList<String> getColumns() {
         return columns;
     }

@@ -8,7 +8,7 @@ public class Factor {
     private int count;
     private ArrayList<String> parents;
     private ArrayList<String> given;
-    private ArrayList<ArrayList<String>> rows;
+    private ArrayList<rowInCPT> rows;
     private ArrayList<Double> values;
 
     public Factor(EventNode node, ArrayList<String> given, int count)
@@ -27,17 +27,11 @@ public class Factor {
             this.given.add(given.get(i));
         }
         //first lets copy all the rows
-        this.rows = new ArrayList<ArrayList<String>>();
-        for(int i =0;i < node.getCPT().outcomes.size();i++)
+        this.rows = new ArrayList<rowInCPT>();
+        for(int i =0; i < node.getCPT().rows.size();i++)
         {
-            for(int j =0; j < node.getCPT().values.size();j++)
-            {
-                if(j  == 0)
-                {
-                    this.rows.add(new ArrayList<String>());
-                }
-                this.rows.get(i).add(node.getCPT().outcomes.get(i).get(j));
-            }
+            this.rows.add(new rowInCPT(node.getCPT().rows.get(i)));
+
         }
         this.values = new ArrayList<Double>();
         for(int i =0; i < node.getCPT().values.size();i++)
@@ -47,10 +41,6 @@ public class Factor {
         for(int i =0;i < given.size();i++)
         {
             String[] givenAtI = given.get(i).split("=");
-            if(givenAtI[0].equals("E"))
-            {
-                System.out.println("now");
-            }
             chooseRows(givenAtI[0],givenAtI[1]);
         }
     }
@@ -60,16 +50,12 @@ public class Factor {
     {
         //initialize new rows with empty arrayLists and new values arrayList
         ArrayList<Integer> rowsTaken = new ArrayList<Integer>();
-        ArrayList<ArrayList<String>> newRows = new ArrayList<ArrayList<String>>();
+        ArrayList<rowInCPT> newRows = new ArrayList<rowInCPT>();
         ArrayList<Double> newValues = new ArrayList<Double>();
-        for(int i =0; i < this.rows.size();i++)
-        {
-            newRows.add(new ArrayList<String>());
-        }
         int index = -1;
         if(name.equals(this.FactorOf))
         {
-            index = this.nodeOfFactor.getCPT().outcomes.size()-1;
+            index = this.rows.get(0).getColumns().size()-1;
         }
         else
         {
@@ -79,23 +65,34 @@ public class Factor {
         {
             for(int i =0; i < this.rows.size();i++)
             {
-                for(int j =0; j < this.values.size();j++)
+                if(this.rows.get(i).getColumns().get(index).equals(state))
                 {
-                    if(this.rows.get(index).get(j).equals(state))
-                    {
-                        newRows.get(i).add(this.rows.get(i).get(j));
-                        if(!rowsTaken.contains(j))
-                        {
-                            newValues.add(this.values.get(j));
-                            rowsTaken.add(j);
-                        }
-                    }
+                    newRows.add(new rowInCPT(this.rows.get(i)));
+                    newValues.add(this.rows.get(i).getValue());
                 }
             }
             this.rows = newRows;
             this.values = newValues;
         }
-
-
+    }
+    public void printFactor()
+    {
+        System.out.println("Factor of node: "+ this.FactorOf);
+        System.out.print("Conditions: ");
+        for(int i =0; i < this.given.size();i++)
+        {
+            System.out.print(this.given.get(i)+ " ");
+        }
+        System.out.println();
+        for(int i =0; i < this.parents.size();i++)
+        {
+            System.out.print(this.parents.get(i) + "   ");
+        }
+        System.out.print(this.FactorOf + "   ");
+        System.out.println("value");
+        for(int i =0; i < this.rows.size();i++)
+        {
+            System.out.println(this.rows.get(i).toString());
+        }
     }
 }
