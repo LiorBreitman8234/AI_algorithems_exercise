@@ -1,26 +1,29 @@
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class Factor {
+public class Factor implements Comparable<Factor> {
 
     public String FactorOf;
     public EventNode nodeOfFactor;
     private int count;
-    private ArrayList<String> parents;
     private ArrayList<String> given;
     private ArrayList<rowInCPT> rows;
     private ArrayList<Double> values;
+    private ArrayList<String> columns;
+
+
 
     public Factor(EventNode node, ArrayList<String> given, int count)
     {
         this.count = count;
         this.FactorOf = node.getName();
         this.nodeOfFactor = node;
-        this.parents = new ArrayList<String>();
+        this.columns = new ArrayList<String>();
         for(int i =0; i < nodeOfFactor.getParents().size();i++)
         {
-            this.parents.add(this.nodeOfFactor.getParents().get(i).getName());
+            this.columns.add(this.nodeOfFactor.getParents().get(i).getName());
         }
+        this.columns.add(FactorOf);
         this.given = new ArrayList<String>();
         for(int i =0; i < given.size();i++)
         {
@@ -45,6 +48,14 @@ public class Factor {
         }
     }
 
+    public Factor()
+    {
+        ArrayList<String> parents = new ArrayList<String>();
+        ArrayList<String> given = new ArrayList<String>();
+        ArrayList<rowInCPT> rows = new ArrayList<rowInCPT>();
+        ArrayList<Double> values = new ArrayList<Double>();
+    }
+
 
     private void chooseRows(String name, String state)
     {
@@ -52,20 +63,12 @@ public class Factor {
         ArrayList<Integer> rowsTaken = new ArrayList<Integer>();
         ArrayList<rowInCPT> newRows = new ArrayList<rowInCPT>();
         ArrayList<Double> newValues = new ArrayList<Double>();
-        int index = -1;
-        if(name.equals(this.FactorOf))
-        {
-            index = this.rows.get(0).getColumns().size()-1;
-        }
-        else
-        {
-            index= this.nodeOfFactor.getCPT().getIndexParent(name);
-        }
+        int index = index= this.nodeOfFactor.getCPT().getIndexColumn(name);
         if(index != -1)
         {
             for(int i =0; i < this.rows.size();i++)
             {
-                if(this.rows.get(i).getColumns().get(index).equals(state))
+                if(this.rows.get(i).getColumnValues().get(index).equals(state))
                 {
                     newRows.add(new rowInCPT(this.rows.get(i)));
                     newValues.add(this.rows.get(i).getValue());
@@ -77,22 +80,106 @@ public class Factor {
     }
     public void printFactor()
     {
-        System.out.println("Factor of node: "+ this.FactorOf);
+        System.out.println("\nFactor of node: "+ this.FactorOf);
         System.out.print("Conditions: ");
         for(int i =0; i < this.given.size();i++)
         {
             System.out.print(this.given.get(i)+ " ");
         }
         System.out.println();
-        for(int i =0; i < this.parents.size();i++)
+        for(int i =0; i < this.columns.size();i++)
         {
-            System.out.print(this.parents.get(i) + "   ");
+            System.out.print(this.columns.get(i) + "   ");
         }
-        System.out.print(this.FactorOf + "   ");
         System.out.println("value");
         for(int i =0; i < this.rows.size();i++)
         {
             System.out.println(this.rows.get(i).toString());
         }
+    }
+
+    public int lexicographicSum()
+    {
+        int sum = 0;
+        for(int i =0; i < this.columns.size();i++)
+        {
+            int ascii = 0;
+            for(int j = 0; j <this.columns.get(i).length();j++)
+            {
+                ascii += (int)this.columns.get(i).charAt(j);
+            }
+            sum += ascii;
+        }
+        return sum;
+    }
+    public int getCount() {
+        return count;
+    }
+
+    public void addRow(rowInCPT row)
+    {
+        if(row!=null)
+        {
+            this.rows.add(row);
+            this.values.add(row.getValue());
+        }
+    }
+
+    public ArrayList<String> getColumns() {
+        return columns;
+    }
+
+    public void setColumns(ArrayList<String> columns) {
+        this.columns = columns;
+    }
+
+    public void setCount(int count) {
+        this.count = count;
+    }
+
+
+    public ArrayList<String> getGiven() {
+        return given;
+    }
+
+    public void setGiven(ArrayList<String> given) {
+        this.given = given;
+    }
+
+    public ArrayList<rowInCPT> getRows() {
+        return rows;
+    }
+
+    public void setRows(ArrayList<rowInCPT> rows) {
+        this.rows = rows;
+    }
+
+    public ArrayList<Double> getValues() {
+        return values;
+    }
+
+    public void setValues(ArrayList<Double> values) {
+        this.values = values;
+    }
+
+    @Override
+    public int compareTo(Factor o) {
+        if(this.rows.size() > o.getRows().size())
+        {
+            return 1;
+        }
+        if(this.rows.size() < o.getRows().size())
+        {
+            return -1;
+        }
+        if(this.lexicographicSum() > o.lexicographicSum())
+        {
+            return 1;
+        }
+        if(this.lexicographicSum() < o.lexicographicSum())
+        {
+            return -1;
+        }
+        return 1;
     }
 }

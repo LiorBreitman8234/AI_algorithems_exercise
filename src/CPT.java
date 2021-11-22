@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class CPT {
 
     public String name;
-    public ArrayList<String> given;
+    public ArrayList<String> columns;
     public ArrayList<rowInCPT> rows;
     public ArrayList<Double> values;
 
@@ -14,7 +14,7 @@ public class CPT {
         this.name = mainNode.getName();
         String[] valuesString = mainNode.getValues().split(" ");
         this.values = new ArrayList<Double>();
-        this.given = new ArrayList<String>();
+        this.columns = new ArrayList<String>();
         for(int i =0; i < valuesString.length;i++)
         {
             values.add(Double.parseDouble(valuesString[i]));
@@ -24,9 +24,10 @@ public class CPT {
         for(int i =0; i < parents.size();i++)
         {
             outcomes.add(new ArrayList<String>());
-            this.given.add(parents.get(i).getName());
+            this.columns.add(parents.get(i).getName());
         }
         outcomes.add(new ArrayList<String>());// for the current node
+        this.columns.add(mainNode.getName());
         int countOutcomes =0;
         for(int i =outcomes.size()-1; i >=0;i--)
         {
@@ -67,15 +68,15 @@ public class CPT {
             {
                 combination.add(outcomes.get(j).get(i));
             }
-            this.rows.add(new rowInCPT(combination,this.values.get(i)));
+            this.rows.add(new rowInCPT(combination,this.values.get(i),this.columns));
         }
     }
 
-    public int getIndexParent(String name)
+    public int getIndexColumn(String name)
     {
-        for(int i =0; i < this.given.size() ;i++)
+        for(int i =0; i < this.columns.size() ;i++)
         {
-            if(given.get(i).equals(name))
+            if(columns.get(i).equals(name))
             {
                 return i;
             }
@@ -87,11 +88,10 @@ public class CPT {
     {
         System.out.println("\nCPT of: "+ this.name);
         System.out.println("---------------------------------------");
-        for(int i =0; i < given.size();i++)
+        for(int i =0; i < columns.size();i++)
         {
-            System.out.print(this.given.get(i) + "   ");
+            System.out.print(this.columns.get(i) + "   ");
         }
-        System.out.print(this.name+ "   ");
         System.out.println("value");
         System.out.println("---------------------------------------");
 
