@@ -1,6 +1,9 @@
-import java.util.ArrayList;
+import javafx.beans.binding.ObjectExpression;
 
-public class rowInCPT {
+import java.util.ArrayList;
+import java.util.Collection;
+
+public class rowInCPT{
 
     private ArrayList<String> columns;
     private ArrayList<String> columnsValues;
@@ -74,7 +77,7 @@ public class rowInCPT {
         {
             int indexFirst = this.columnIndex(checkOn.get(i));
             int indexSecond = other.columnIndex(checkOn.get(i));
-            if(other.columnsValues.get(indexSecond)!= this.columnsValues.get(indexFirst))
+            if(!other.columnsValues.get(indexSecond).equals(this.columnsValues.get(indexFirst)))
             {
                 return false;
             }
@@ -93,4 +96,25 @@ public class rowInCPT {
         }
         return -1;
     }
+
+    @Override
+    public boolean equals(Object other)
+    {
+        if(other instanceof rowInCPT)
+        {
+            if(this.rowsMatch((rowInCPT) other,this.columns) && this.value == ((rowInCPT) other).getValue())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return (int)this.value;
+    }
+
+
 }

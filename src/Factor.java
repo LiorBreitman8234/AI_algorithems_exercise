@@ -57,6 +57,51 @@ public class Factor implements Comparable<Factor> {
     }
 
 
+    public int eliminate(String toEliminate)
+    {
+        ArrayList<rowInCPT> newRows = new ArrayList<rowInCPT>();
+        ArrayList<Double> newValues = new ArrayList<Double>();
+        int addCounter =0;
+        //get all the columns except the one to eliminate, so we can check if the rows match
+        ArrayList<String> commonColumns = new ArrayList<String>();
+        for(String column:this.columns)
+        {
+            if(!column.equals(toEliminate))
+            {
+                commonColumns.add(column);
+            }
+        }
+        for(rowInCPT firstRow:this.rows)
+        {
+            for(rowInCPT secondRow:this.rows)
+            {
+                boolean check = firstRow.rowsMatch(secondRow,this.columns);
+                if(!check)
+                {
+                    if(firstRow.rowsMatch(secondRow,commonColumns))
+                    {
+                        ArrayList<String> columnValues = new ArrayList<String>();
+                        for(String column:commonColumns)
+                        {
+                            columnValues.add(firstRow.getColumnValues().get(firstRow.columnIndex(column)));
+                        }
+                        rowInCPT newRow = new rowInCPT(columnValues,firstRow.getValue()+ secondRow.getValue(),commonColumns);
+                        if(!newRows.contains(newRow))
+                        {
+                            newRows.add(newRow);
+                            newValues.add(newRow.getValue());
+                            addCounter++;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        this.rows = newRows;
+        this.values = newValues;
+        this.columns = commonColumns;
+        return addCounter;
+    }
     private void chooseRows(String name, String state)
     {
         //initialize new rows with empty arrayLists and new values arrayList

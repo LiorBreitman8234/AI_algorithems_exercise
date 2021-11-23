@@ -7,7 +7,7 @@ public class Main {
 
 
         BayesianNetwork BN = new BayesianNetwork();
-        String txtfile = "src/input2.txt";
+        String txtfile = "src/input.txt";
         queriesHandler handler = ReadFiles.readTXT(txtfile);
         System.out.println(handler.filename);
         for(int i = 0; i < handler.queries.size(); i++)
@@ -20,7 +20,12 @@ public class Main {
         {
             BN.nodesInNetwork.get(i).PrintCPT();
         }
-//        ArrayList<String> given = new ArrayList<String>();
+        ArrayList<String> given = new ArrayList<String>();
+        Factor f = new Factor(BN.nodesInNetwork.get(2),given,1);
+        f.printFactor();
+        f.eliminate("A");
+        f.printFactor();
+//
 //        given.add("J=T");
 //        Factor f1 = new Factor(BN.nodesInNetwork.get(3),given,1);
 //        f1.printFactor();

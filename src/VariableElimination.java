@@ -44,11 +44,11 @@ public class VariableElimination {
             String evidenceName = this.evidence[0].split("=")[0];
             evidenceNode.add(evidenceName);
         }
-        ArrayList<String> irelevantNode = new ArrayList<String>();
-        GetIRelevantFactors(nodeOfQuery, evidenceNode, irelevantNode);
+        ArrayList<String> irrelevantNode = new ArrayList<String>();
+        GetIRelevantFactors(nodeOfQuery, evidenceNode, irrelevantNode);
         for(EventNode node: network.nodesInNetwork)
         {
-            if(!irelevantNode.contains(node.getName()))
+            if(!irrelevantNode.contains(node.getName()))
             {
                 ArrayList<String> evidence = new ArrayList<String>();
                 for(int i =0; i < this.evidence.length;i++)
@@ -58,32 +58,37 @@ public class VariableElimination {
                 factors.add(new Factor(node,evidence,this.count++));
             }
         }
-        for(int i =0; i < this.hidden.length;i++)
-        {
-            String currHidden = this.hidden[i];
+        for (String currHidden : this.hidden) {
             ArrayList<Factor> relevantFactors = new ArrayList<Factor>();
-            getRelevantFactors(irelevantNode, currHidden, relevantFactors);
+            getRelevantFactors(irrelevantNode, currHidden, relevantFactors);
+            while (relevantFactors.size() != 1) {
+                sort(relevantFactors);
+                Factor f = join(relevantFactors.get(0),relevantFactors.get(1));
+                this.factors.remove(relevantFactors.get(0));
+                this.factors.remove(relevantFactors.get(1));
+                relevantFactors.remove(0);
+                relevantFactors.remove(1);
+                relevantFactors.add(0,f);
+            }
+            countAdd += relevantFactors.get(0).eliminate(currHidden);
+            this.factors.add(relevantFactors.get(0));
         }
+
         return response;
     }
 
-    private void getRelevantFactors(ArrayList<String> irelevantNode, String currHidden, ArrayList<Factor> relevantFactors) {
-        for(int j =0; j < this.factors.size();j++)
-        {
-            if(this.factors.get(j).getColumns().contains(currHidden))
-            {
+    private void getRelevantFactors(ArrayList<String> irrelevantNode, String currHidden, ArrayList<Factor> relevantFactors) {
+        for (Factor factor : this.factors) {
+            if (factor.getColumns().contains(currHidden)) {
                 boolean relevant = true;
-                for(int k = 0; k < irelevantNode.size(); k++)
-                {
-                    if(this.factors.get(j).getColumns().contains(irelevantNode.get(k)))
-                    {
+                for (String s : irrelevantNode) {
+                    if (factor.getColumns().contains(s)) {
                         relevant = false;
                         break;
                     }
                 }
-                if(relevant)
-                {
-                    relevantFactors.add(this.factors.get(j));
+                if (relevant && factor.getRows().size() > 1) {
+                    relevantFactors.add(factor);
                 }
 
             }
@@ -91,7 +96,7 @@ public class VariableElimination {
         }
     }
 
-    private void GetIRelevantFactors(String nodeOfQuery, ArrayList<String> evidenceNode, ArrayList<String> irelevantNode) {
+    private void GetIRelevantFactors(String nodeOfQuery, ArrayList<String> evidenceNode, ArrayList<String> irrelevantNode) {
         for(EventNode node:network.nodesInNetwork)
         {
             if(!node.getName().equals(nodeOfQuery) || !evidenceNode.contains(node.getName()))
@@ -99,7 +104,7 @@ public class VariableElimination {
                 BayesBall bb = new BayesBall(nodeOfQuery,node.getName(), evidenceNode,network);
                 if(!bb.bayesBallTraversal(bb.source,null))
                 {
-                    irelevantNode.add(node.getName());
+                    irrelevantNode.add(node.getName());
                     continue;
                 }
                 boolean relevent = false;
@@ -122,9 +127,9 @@ public class VariableElimination {
                         relevent = true;
                     }
                 }
-                if(!relevent && !irelevantNode.contains(node.getName()))
+                if(!relevent && !irrelevantNode.contains(node.getName()))
                 {
-                    irelevantNode.add(node.getName());
+                    irrelevantNode.add(node.getName());
                 }
             }
         }
