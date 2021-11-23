@@ -43,10 +43,12 @@ public class queriesHandler {
                 if(b.bayesBallTraversal(b.source,null))
                 {
                     responses.add("no");
+                    System.out.println("no");
                 }
                 else
                 {
                     responses.add("yes");
+                    System.out.println("yes");
                 }
             }
             else
@@ -60,7 +62,11 @@ public class queriesHandler {
                 String[] evidenceFirst = splitQueryEvidence[1].split("\\)");
                 String[] evidence = evidenceFirst[0].split(",");
                 VariableElimination VE = new VariableElimination(bn,Query,evidence,hidden);
-                ArrayList<Double> response;
+                ArrayList<Double> response = VE.VariableEliminationAlgo();
+                String res = response.get(0) + "," + response.get(1) + "," +response.get(2);
+                responses.add(res);
+                System.out.println(res);
+
 
 
 

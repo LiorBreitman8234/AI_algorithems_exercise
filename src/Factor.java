@@ -1,3 +1,5 @@
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -85,7 +87,10 @@ public class Factor implements Comparable<Factor> {
                         {
                             columnValues.add(firstRow.getColumnValues().get(firstRow.columnIndex(column)));
                         }
-                        rowInCPT newRow = new rowInCPT(columnValues,firstRow.getValue()+ secondRow.getValue(),commonColumns);
+                        DecimalFormat df = new DecimalFormat("#.#####");
+                        df.setRoundingMode(RoundingMode.CEILING);
+                        double number = Double.parseDouble(df.format(firstRow.getValue()+ secondRow.getValue()));
+                        rowInCPT newRow = new rowInCPT(columnValues,number,commonColumns);
                         if(!newRows.contains(newRow))
                         {
                             newRows.add(newRow);

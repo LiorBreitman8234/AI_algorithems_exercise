@@ -15,17 +15,15 @@ public class Main {
             System.out.println(handler.queries.get(i));
         }
         BN.buildNetwork(handler.filename);
-        handler.handle(BN);
+        ArrayList<String> answers = handler.handle(BN);
+        for(int i =0; i < answers.size();i++)
+        {
+            System.out.println(answers.get(i));
+        }
         for(int i =0; i < BN.nodesInNetwork.size();i++)
         {
             BN.nodesInNetwork.get(i).PrintCPT();
         }
-        ArrayList<String> given = new ArrayList<String>();
-        Factor f = new Factor(BN.nodesInNetwork.get(2),given,1);
-        f.printFactor();
-        f.eliminate("A");
-        f.printFactor();
-//
 //        given.add("J=T");
 //        Factor f1 = new Factor(BN.nodesInNetwork.get(3),given,1);
 //        f1.printFactor();

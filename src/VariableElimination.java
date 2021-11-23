@@ -1,3 +1,5 @@
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -26,6 +28,14 @@ public class VariableElimination {
         {
             given.add(evidence[i]);
         }
+        for(int i =0; i < evidence.length;i++)
+        {
+            this.evidence[i] = evidence[i];
+        }
+        for(int i =0; i <hidden.length;i++)
+        {
+            this.hidden[i] =hidden[i];
+        }
     }
 
     public VariableElimination()
@@ -41,7 +51,7 @@ public class VariableElimination {
         ArrayList<String> evidenceNode = new ArrayList<String>();
         for(int i =0; i < this.evidence.length;i++)
         {
-            String evidenceName = this.evidence[0].split("=")[0];
+            String evidenceName = this.evidence[i].split("=")[0];
             evidenceNode.add(evidenceName);
         }
         ArrayList<String> irrelevantNode = new ArrayList<String>();
@@ -58,22 +68,60 @@ public class VariableElimination {
                 factors.add(new Factor(node,evidence,this.count++));
             }
         }
+
         for (String currHidden : this.hidden) {
             ArrayList<Factor> relevantFactors = new ArrayList<Factor>();
             getRelevantFactors(irrelevantNode, currHidden, relevantFactors);
+            if(relevantFactors.size() ==0)
+            {
+                System.out.println("stop");
+            }
             while (relevantFactors.size() != 1) {
                 sort(relevantFactors);
                 Factor f = join(relevantFactors.get(0),relevantFactors.get(1));
                 this.factors.remove(relevantFactors.get(0));
                 this.factors.remove(relevantFactors.get(1));
                 relevantFactors.remove(0);
-                relevantFactors.remove(1);
+                relevantFactors.remove(0);
                 relevantFactors.add(0,f);
             }
             countAdd += relevantFactors.get(0).eliminate(currHidden);
             this.factors.add(relevantFactors.get(0));
         }
+        ArrayList<Factor> relevantFactors = new ArrayList<Factor>();
+        getRelevantFactors(irrelevantNode,nodeOfQuery,relevantFactors);
+        while (relevantFactors.size() != 1) {
+            sort(relevantFactors);
+            Factor f = join(relevantFactors.get(0),relevantFactors.get(1));
+            this.factors.remove(relevantFactors.get(0));
+            this.factors.remove(relevantFactors.get(0));
+            relevantFactors.remove(0);
+            relevantFactors.remove(0);
+            relevantFactors.add(0,f);
+        }
+        double total = 0;
+        countAdd+=relevantFactors.get(0).getRows().size()-1;
+        for(rowInCPT row:relevantFactors.get(0).getRows())
+        {
+            total+= row.getValue();
 
+        }
+        for(rowInCPT row:relevantFactors.get(0).getRows())
+        {
+            row.setValue(row.getValue()/total);
+        }
+        double endValue = 0;
+        String state = query.split("=")[1];
+        for(rowInCPT row:relevantFactors.get(0).getRows())
+        {
+            if(row.getColumnValues().get(row.columnIndex(nodeOfQuery)).equals(state))
+            {
+                endValue = row.getValue();
+            }
+        }
+        response.add(endValue);
+        response.add((double)countAdd);
+        response.add((double)countMult);
         return response;
     }
 
@@ -112,7 +160,7 @@ public class VariableElimination {
                 {
                     int index = network.containsAndIndex(evidenceNode.get(i));
                     EventNode nodeToCheck = network.nodesInNetwork.get(index);
-                    if(node.isAncestor(nodeToCheck))
+                    if(nodeToCheck.isDescendant(node))
                     {
                         relevent = true;
                         break;
@@ -122,7 +170,7 @@ public class VariableElimination {
                 {
                     int index = network.containsAndIndex(nodeOfQuery);
                     EventNode nodeToCheck = network.nodesInNetwork.get(index);
-                    if(node.isAncestor(nodeToCheck))
+                    if(nodeToCheck.isDescendant(node))
                     {
                         relevent = true;
                     }
@@ -225,7 +273,9 @@ public class VariableElimination {
                 columnValues.add(secondRow.getColumnValues().get(i));
             }
         }
-        double value = firstRow.getValue() * secondRow.getValue();
+        DecimalFormat df = new DecimalFormat("#.#####");
+        df.setRoundingMode(RoundingMode.CEILING);
+        double value = Double.parseDouble(df.format(firstRow.getValue() * secondRow.getValue()));
         this.countMult++;
         rowInCPT row = new rowInCPT(columnValues,value,columns);
         return row;

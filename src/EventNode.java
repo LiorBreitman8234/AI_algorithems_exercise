@@ -101,20 +101,24 @@ public class EventNode {
     }
 
 
-    public boolean isAncestor(EventNode other)
+    public boolean isDescendant(EventNode other)
     {
-        boolean flag = false;
-        if(this.childrenContain(other.getName()))
+        if(this.name.equals(other.getName()))
         {
             return true;
         }
-        if(this.getChildren().size() == 0)
+        if(this.parents.size() ==0)
         {
             return false;
         }
-        for(int i =0; i < this.getChildren().size();i++)
+        if(this.parentContain(other.getName()))
         {
-            flag = this.children.get(i).isAncestor(other);
+            return true;
+        }
+        boolean flag = false;
+        for(int i =0; i < this.parents.size();i++)
+        {
+            flag = this.parents.get(i).isDescendant(other);
             if(flag)
             {
                 return true;
@@ -161,6 +165,17 @@ public class EventNode {
             }
         }
         return false;
+    }
+    
+    public void removeKid(String name)
+    {
+        for(EventNode node:this.children)
+        {
+            if(node.getName().equals(name))
+            {
+                this.children.remove(node);
+            }
+        }
     }
 
     public String getName() {
