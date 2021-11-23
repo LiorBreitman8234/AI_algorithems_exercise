@@ -59,9 +59,9 @@ public class queriesHandler {
                 String Query = splitQueryEvidence[0];
                 String[] evidenceFirst = splitQueryEvidence[1].split("\\)");
                 String[] evidence = evidenceFirst[0].split(",");
-                System.out.println(Query);
-                System.out.println(Arrays.toString(evidence));
-                System.out.println(Arrays.toString(hidden));
+                VariableElimination VE = new VariableElimination(bn,Query,evidence,hidden);
+                ArrayList<Double> response;
+
 
 
 

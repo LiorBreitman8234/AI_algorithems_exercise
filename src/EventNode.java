@@ -101,6 +101,27 @@ public class EventNode {
     }
 
 
+    public boolean isAncestor(EventNode other)
+    {
+        boolean flag = false;
+        if(this.childrenContain(other.getName()))
+        {
+            return true;
+        }
+        if(this.getChildren().size() == 0)
+        {
+            return false;
+        }
+        for(int i =0; i < this.getChildren().size();i++)
+        {
+            flag = this.children.get(i).isAncestor(other);
+            if(flag)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
     public CPT getCPT()
     {
         return this.cpt;

@@ -60,10 +60,9 @@ public class Factor implements Comparable<Factor> {
     private void chooseRows(String name, String state)
     {
         //initialize new rows with empty arrayLists and new values arrayList
-        ArrayList<Integer> rowsTaken = new ArrayList<Integer>();
         ArrayList<rowInCPT> newRows = new ArrayList<rowInCPT>();
         ArrayList<Double> newValues = new ArrayList<Double>();
-        int index = index= this.nodeOfFactor.getCPT().getIndexColumn(name);
+        int index = this.nodeOfFactor.getCPT().getIndexColumn(name);
         if(index != -1)
         {
             for(int i =0; i < this.rows.size();i++)
@@ -76,6 +75,16 @@ public class Factor implements Comparable<Factor> {
             }
             this.rows = newRows;
             this.values = newValues;
+        }
+        else
+        {
+            for(int i =0; i < this.given.size();i++)
+            {
+                if(this.given.get(i).contains(name))
+                {
+                    this.given.remove(i);
+                }
+            }
         }
     }
     public void printFactor()
