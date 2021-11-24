@@ -1,7 +1,4 @@
-import javafx.beans.binding.ObjectExpression;
-
 import java.util.ArrayList;
-import java.util.Collection;
 
 public class rowInCPT{
 

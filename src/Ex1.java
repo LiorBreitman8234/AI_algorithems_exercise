@@ -6,7 +6,7 @@ public class Ex1 {
 
 
         BayesianNetwork BN = new BayesianNetwork();
-        String txtfile = "src/input.txt";
+        String txtfile = "input.txt";
         queriesHandler handler = fileHandler.readTXT(txtfile);
         System.out.println(handler.filename);
         for(int i = 0; i < handler.queries.size(); i++)

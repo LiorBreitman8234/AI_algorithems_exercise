@@ -1,7 +1,5 @@
-import javafx.scene.Parent;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
 public class EventNode {
     private String name;
