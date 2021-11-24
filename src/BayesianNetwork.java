@@ -10,7 +10,7 @@ public class BayesianNetwork {
 
     public void buildNetwork(String fileName)
     {
-        ArrayList<nodeBuilderHelper> helpers = ReadFiles.readXML(fileName);
+        ArrayList<nodeBuilderHelper> helpers = fileHandler.readXML(fileName);
         for(int i =0; i < helpers.size(); i++)
         {
             String name = helpers.get(i).getName();

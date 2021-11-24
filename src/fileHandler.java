@@ -10,7 +10,7 @@ import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 
-public class ReadFiles {
+public class fileHandler {
 
     public static queriesHandler readTXT(String filename)
     {

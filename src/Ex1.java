@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Ex1 {
 
@@ -8,7 +7,7 @@ public class Ex1 {
 
         BayesianNetwork BN = new BayesianNetwork();
         String txtfile = "src/input.txt";
-        queriesHandler handler = ReadFiles.readTXT(txtfile);
+        queriesHandler handler = fileHandler.readTXT(txtfile);
         System.out.println(handler.filename);
         for(int i = 0; i < handler.queries.size(); i++)
         {
@@ -16,7 +15,7 @@ public class Ex1 {
         }
         BN.buildNetwork(handler.filename);
         ArrayList<String> answers = handler.handle(BN);
-        ReadFiles.writeToTxt(answers);
+        fileHandler.writeToTxt(answers);
         for(int i =0; i < answers.size();i++)
         {
             System.out.println(answers.get(i));
