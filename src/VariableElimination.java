@@ -1,5 +1,7 @@
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -61,10 +63,7 @@ public class VariableElimination {
             if(!irrelevantNode.contains(node.getName()))
             {
                 ArrayList<String> evidence = new ArrayList<String>();
-                for(int i =0; i < this.evidence.length;i++)
-                {
-                    evidence.add(this.evidence[i]);
-                }
+                Collections.addAll(evidence, this.evidence);
                 factors.add(new Factor(node,evidence,this.count++));
             }
         }
@@ -74,7 +73,7 @@ public class VariableElimination {
             getRelevantFactors(irrelevantNode, currHidden, relevantFactors);
             if(relevantFactors.size() ==0)
             {
-                System.out.println("stop");
+                continue;
             }
             while (relevantFactors.size() != 1) {
                 sort(relevantFactors);
@@ -119,6 +118,8 @@ public class VariableElimination {
                 endValue = row.getValue();
             }
         }
+        NumberFormat nf = new DecimalFormat("#0.00000");
+        endValue = Double.parseDouble(nf.format(endValue));
         response.add(endValue);
         response.add((double)countAdd);
         response.add((double)countMult);
@@ -273,9 +274,10 @@ public class VariableElimination {
                 columnValues.add(secondRow.getColumnValues().get(i));
             }
         }
-        DecimalFormat df = new DecimalFormat("#.#####");
-        df.setRoundingMode(RoundingMode.CEILING);
-        double value = Double.parseDouble(df.format(firstRow.getValue() * secondRow.getValue()));
+        //NumberFormat nf = new DecimalFormat("#0.00000");
+        //nf.setRoundingMode(RoundingMode.FLOOR);
+        //double value = Double.parseDouble(nf.format(firstRow.getValue() * secondRow.getValue()));
+        double value = firstRow.getValue()*secondRow.getValue();
         this.countMult++;
         rowInCPT row = new rowInCPT(columnValues,value,columns);
         return row;

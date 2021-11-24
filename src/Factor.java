@@ -1,5 +1,7 @@
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -87,10 +89,10 @@ public class Factor implements Comparable<Factor> {
                         {
                             columnValues.add(firstRow.getColumnValues().get(firstRow.columnIndex(column)));
                         }
-                        DecimalFormat df = new DecimalFormat("#.#####");
-                        df.setRoundingMode(RoundingMode.CEILING);
-                        double number = Double.parseDouble(df.format(firstRow.getValue()+ secondRow.getValue()));
-                        rowInCPT newRow = new rowInCPT(columnValues,number,commonColumns);
+                        //NumberFormat nf = new DecimalFormat("#0.00000");
+                        //double value = Double.parseDouble(nf.format(firstRow.getValue() + secondRow.getValue()));
+                        double value = firstRow.getValue() + secondRow.getValue();
+                        rowInCPT newRow = new rowInCPT(columnValues,value,commonColumns);
                         if(!newRows.contains(newRow))
                         {
                             newRows.add(newRow);
@@ -165,7 +167,7 @@ public class Factor implements Comparable<Factor> {
             int ascii = 0;
             for(int j = 0; j <this.columns.get(i).length();j++)
             {
-                ascii += (int)this.columns.get(i).charAt(j);
+                ascii += this.columns.get(i).charAt(j);
             }
             sum += ascii;
         }

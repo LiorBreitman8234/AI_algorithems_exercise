@@ -1,7 +1,4 @@
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.xml.XMLConstants;
@@ -92,5 +89,23 @@ public class ReadFiles {
             e.printStackTrace();
         }
         return nodes_preview;
+    }
+
+    public static void writeToTxt(ArrayList<String> response)
+    {
+        try
+        {
+            FileWriter writer = new FileWriter("output.txt");
+            for(int i =0; i < response.size();i++)
+            {
+                writer.write(response.get(i) + "\n");
+            }
+            writer.close();
+        }
+        catch (Exception e)
+        {
+            System.out.println("error");
+            e.printStackTrace();
+        }
     }
 }
