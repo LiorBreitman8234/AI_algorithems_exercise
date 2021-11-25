@@ -50,6 +50,37 @@ public class BayesianNetwork {
     }
 
 
+    public boolean isDescendant(String current, String toChcek)
+    {
+        if(current.equals(toChcek))
+        {
+            return true;
+        }
+        EventNode thisNode = this.nodesInNetwork.get(this.containsAndIndex(current));
+        if(thisNode.parentContain(toChcek))
+        {
+            return true;
+        }
+        if(thisNode.getParents().size() == 0)
+        {
+            return false;
+        }
+        boolean flag = false;
+        for(int i =0; i < thisNode.getParents().size();i++)
+        {
+            String nextNode = thisNode.getParents().get(i).getName();
+            flag = this.isDescendant(nextNode,toChcek);
+            if(flag)
+            {
+                return  true;
+            }
+        }
+        return false;
+
+    }
+
+
+
     public int containsAndIndex(String eventName)
     {
         for(int i =0; i < nodesInNetwork.size();i++)

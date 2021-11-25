@@ -36,10 +36,8 @@ public class queriesHandler {
                 BayesBall b = new BayesBall(source, dest, given, bn);
                 if (b.bayesBallTraversal(b.source, null)) {
                     responses.add("no");
-                    System.out.println("no");
                 } else {
                     responses.add("yes");
-                    System.out.println("yes");
                 }
             } else {
                 //P(B=T|J=T,M=T) A-E
@@ -53,7 +51,12 @@ public class queriesHandler {
                 String[] splitQueryEvidence = splitQuery[1].split("\\|");
                 String Query = splitQueryEvidence[0];
                 String[] evidenceFirst = splitQueryEvidence[1].split("\\)");
-                String[] evidence = evidenceFirst[0].split(",");
+                String[] evidence = new String[1];
+                if(evidenceFirst.length > 0 )
+                {
+                    evidence = evidenceFirst[0].split(",");
+
+                }
                 VariableElimination VE = new VariableElimination(bn, Query, evidence, hidden);
                 ArrayList<Double> response = VE.VariableEliminationAlgo();
                 String res = response.get(0) + "," + response.get(1).intValue() + "," + response.get(2).intValue();

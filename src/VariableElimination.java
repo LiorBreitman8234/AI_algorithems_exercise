@@ -1,5 +1,3 @@
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -48,27 +46,65 @@ public class VariableElimination {
 
     public ArrayList<Double> VariableEliminationAlgo()
     {
+
         ArrayList<Double> response = new ArrayList<Double>();
         String nodeOfQuery = query.split("=")[0];
         ArrayList<String> evidenceNode = new ArrayList<String>();
-        for(int i =0; i < this.evidence.length;i++)
+        for (String value : this.evidence) {
+            try
+            {
+                String evidenceName = value.split("=")[0];
+                evidenceNode.add(evidenceName);
+
+            }
+            catch (Exception e)
+            {
+                System.out.println("no evidence");
+            }
+        }
+        if(inCPT(query,evidenceNode,hidden))
         {
-            String evidenceName = this.evidence[i].split("=")[0];
-            evidenceNode.add(evidenceName);
+            EventNode node = this.network.nodesInNetwork.get(this.network.containsAndIndex(query.split("=")[0]));
+            Factor cpt = new Factor(node,evidenceNode,this.count);
+            cpt.chooseRows(query.split("=")[0],query.split("=")[1]);
+            response.add(cpt.getRows().get(0).getValue());
+            response.add(0.0);
+            response.add(0.0);
+            return response;
+
         }
         ArrayList<String> irrelevantNode = new ArrayList<String>();
+        ArrayList<String> newHidden = new ArrayList<String>();
         GetIRelevantFactors(nodeOfQuery, evidenceNode, irrelevantNode);
+        for (String s : this.hidden) {
+            if (!irrelevantNode.contains(s)) {
+                newHidden.add(s);
+            }
+        }
         for(EventNode node: network.nodesInNetwork)
         {
             if(!irrelevantNode.contains(node.getName()))
             {
-                ArrayList<String> evidence = new ArrayList<String>();
-                Collections.addAll(evidence, this.evidence);
-                factors.add(new Factor(node,evidence,this.count++));
+                boolean containsIrrelevant = false;
+                for(String irrelevant:irrelevantNode)
+                {
+                    if(node.parentContain(irrelevant))
+                    {
+                        containsIrrelevant = true;
+                        break;
+                    }
+
+                }
+                if(!containsIrrelevant)
+                {
+                    ArrayList<String> evidence = new ArrayList<String>();
+                    Collections.addAll(evidence, this.evidence);
+                    factors.add(new Factor(node,evidence,this.count++));
+                }
             }
         }
 
-        for (String currHidden : this.hidden) {
+        for (String currHidden : newHidden) {
             ArrayList<Factor> relevantFactors = new ArrayList<Factor>();
             getRelevantFactors(irrelevantNode, currHidden, relevantFactors);
             if(relevantFactors.size() ==0)
@@ -84,7 +120,7 @@ public class VariableElimination {
                 relevantFactors.remove(0);
                 relevantFactors.add(0,f);
             }
-            countAdd += relevantFactors.get(0).eliminate(currHidden);
+            countAdd += relevantFactors.get(0).eliminateTry(this.network.nodesInNetwork.get(this.network.containsAndIndex(currHidden)));
             this.factors.add(relevantFactors.get(0));
         }
         ArrayList<Factor> relevantFactors = new ArrayList<Factor>();
@@ -99,10 +135,14 @@ public class VariableElimination {
             relevantFactors.add(0,f);
         }
         double total = 0;
-        countAdd+=relevantFactors.get(0).getRows().size()-1;
         for(rowInCPT row:relevantFactors.get(0).getRows())
         {
+            if(total != 0)
+            {
+                countAdd++;
+            }
             total+= row.getValue();
+
 
         }
         for(rowInCPT row:relevantFactors.get(0).getRows())
@@ -148,7 +188,9 @@ public class VariableElimination {
     private void GetIRelevantFactors(String nodeOfQuery, ArrayList<String> evidenceNode, ArrayList<String> irrelevantNode) {
         for(EventNode node:network.nodesInNetwork)
         {
-            if(!node.getName().equals(nodeOfQuery) || !evidenceNode.contains(node.getName()))
+            boolean checkFirst = node.getName().equals(nodeOfQuery);
+            boolean checkSecond = evidenceNode.contains(node.getName());
+            if(!checkFirst && !checkSecond)
             {
                 BayesBall bb = new BayesBall(nodeOfQuery,node.getName(), evidenceNode,network);
                 if(!bb.bayesBallTraversal(bb.source,null))
@@ -156,27 +198,25 @@ public class VariableElimination {
                     irrelevantNode.add(node.getName());
                     continue;
                 }
-                boolean relevent = false;
-                for(int i = 0; i < evidenceNode.size(); i++)
-                {
-                    int index = network.containsAndIndex(evidenceNode.get(i));
+                boolean relevant = false;
+                for (String s : evidenceNode) {
+                    int index = network.containsAndIndex(s);
                     EventNode nodeToCheck = network.nodesInNetwork.get(index);
-                    if(nodeToCheck.isDescendant(node))
-                    {
-                        relevent = true;
+                    if (this.network.isDescendant(s,node.getName())) {
+                        relevant = true;
                         break;
                     }
                 }
-                if(!relevent)
+                if(!relevant)
                 {
                     int index = network.containsAndIndex(nodeOfQuery);
                     EventNode nodeToCheck = network.nodesInNetwork.get(index);
-                    if(nodeToCheck.isDescendant(node))
+                    if(this.network.isDescendant(nodeOfQuery,node.getName()))
                     {
-                        relevent = true;
+                        relevant = true;
                     }
                 }
-                if(!relevent && !irrelevantNode.contains(node.getName()))
+                if(!relevant && !irrelevantNode.contains(node.getName()))
                 {
                     irrelevantNode.add(node.getName());
                 }
@@ -214,9 +254,9 @@ public class VariableElimination {
             }
         }
         ArrayList<String> given = new ArrayList<String>();
-        for(int i =0; i < this.hidden.length;i++)
+        for(int i =0; i < this.evidence.length;i++)
         {
-            given.add(hidden[i]);
+            given.add(evidence[i]);
         }
         Factor newFactor = new Factor();
         newFactor.setGiven(given);
@@ -281,6 +321,26 @@ public class VariableElimination {
         this.countMult++;
         rowInCPT row = new rowInCPT(columnValues,value,columns);
         return row;
+    }
+
+    public boolean inCPT(String Query, ArrayList<String> evidence,String[] hidden)
+    {
+        EventNode toCheck = this.network.nodesInNetwork.get(network.containsAndIndex(Query.split("=")[0]));
+        for(String s:evidence)
+        {
+            if(!toCheck.parentContain(s))
+            {
+                return false;
+            }
+        }
+        for(String s:hidden)
+        {
+            if(toCheck.parentContain(s))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

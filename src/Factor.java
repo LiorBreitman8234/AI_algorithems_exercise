@@ -45,10 +45,18 @@ public class Factor implements Comparable<Factor> {
         {
             this.values.add(node.getCPT().values.get(i));
         }
+        String[] givenAtI = new String[1];
         for(int i =0;i < given.size();i++)
         {
-            String[] givenAtI = given.get(i).split("=");
-            chooseRows(givenAtI[0],givenAtI[1]);
+            try {
+                givenAtI = given.get(i).split("=");
+                chooseRows(givenAtI[0],givenAtI[1]);
+            }
+            catch (Exception e)
+            {
+                System.out.println("no evidence");
+            }
+
         }
     }
 
@@ -58,6 +66,64 @@ public class Factor implements Comparable<Factor> {
         this.given = new ArrayList<String>();
         this.rows = new ArrayList<rowInCPT>();
         this.values = new ArrayList<Double>();
+    }
+
+    public int eliminateTry(EventNode toEliminate)
+    {
+        ArrayList<rowInCPT> newRows = new ArrayList<rowInCPT>();
+        ArrayList<Double> newValues = new ArrayList<Double>();
+        int addCounter =0;
+        //get all the columns except the one to eliminate, so we can check if the rows match
+        ArrayList<String> commonColumns = new ArrayList<String>();
+        for(String column:this.columns)
+        {
+            if(!column.equals(toEliminate.getName()))
+            {
+                commonColumns.add(column);
+            }
+        }
+        for(rowInCPT firstRow:this.rows)
+        {
+            ArrayList<rowInCPT> rowsToMerge = new ArrayList<rowInCPT>();
+            rowsToMerge.add(firstRow);
+            for(rowInCPT secondRow:this.rows)
+            {
+                boolean check = firstRow.rowsMatch(secondRow,this.columns);
+                if(!check)
+                {
+                    if(firstRow.rowsMatch(secondRow,commonColumns))
+                    {
+                        rowsToMerge.add(secondRow);
+                        if(rowsToMerge.size() == toEliminate.getOutcomes().size())
+                        {
+                            ArrayList<String> columnValues = new ArrayList<String>();
+                            for(String column:commonColumns)
+                            {
+                                columnValues.add(firstRow.getColumnValues().get(firstRow.columnIndex(column)));
+                            }
+                            double value = 0;
+                            for (rowInCPT rowInCPT : rowsToMerge) {
+                                value += rowInCPT.getValue();
+                            }
+                            rowInCPT newRow = new rowInCPT(columnValues,value,commonColumns);
+                            if(!newRows.contains(newRow))
+                            {
+                                newRows.add(newRow);
+                                newValues.add(newRow.getValue());
+                                addCounter++;
+                                break;
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+        this.rows = newRows;
+        this.values = newValues;
+        this.columns = commonColumns;
+        return addCounter;
+
     }
 
 
@@ -89,8 +155,6 @@ public class Factor implements Comparable<Factor> {
                         {
                             columnValues.add(firstRow.getColumnValues().get(firstRow.columnIndex(column)));
                         }
-                        //NumberFormat nf = new DecimalFormat("#0.00000");
-                        //double value = Double.parseDouble(nf.format(firstRow.getValue() + secondRow.getValue()));
                         double value = firstRow.getValue() + secondRow.getValue();
                         rowInCPT newRow = new rowInCPT(columnValues,value,commonColumns);
                         if(!newRows.contains(newRow))
@@ -109,7 +173,8 @@ public class Factor implements Comparable<Factor> {
         this.columns = commonColumns;
         return addCounter;
     }
-    private void chooseRows(String name, String state)
+
+    public void chooseRows(String name, String state)
     {
         //initialize new rows with empty arrayLists and new values arrayList
         ArrayList<rowInCPT> newRows = new ArrayList<rowInCPT>();

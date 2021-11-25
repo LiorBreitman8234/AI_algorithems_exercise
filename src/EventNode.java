@@ -81,27 +81,6 @@ public class EventNode {
         this.values = values;
     }
 
-
-    public boolean isDescendant(EventNode other) {
-        if (this.name.equals(other.getName())) {
-            return true;
-        }
-        if (this.parents.size() == 0) {
-            return false;
-        }
-        if (this.parentContain(other.getName())) {
-            return true;
-        }
-        boolean flag = false;
-        for (int i = 0; i < this.parents.size(); i++) {
-            flag = this.parents.get(i).isDescendant(other);
-            if (flag) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public CPT getCPT() {
         return this.cpt;
     }
