@@ -16,9 +16,8 @@ public class Ex1 {
         BN.buildNetwork(handler.filename);
         ArrayList<String> answers = handler.handle(BN);
         fileHandler.writeToTxt(answers);
-        for(int i =0; i < answers.size();i++)
-        {
-            System.out.println(answers.get(i));
+        for (String answer : answers) {
+            System.out.println(answer);
         }
     }
 }

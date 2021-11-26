@@ -1,6 +1,9 @@
-import javax.swing.plaf.IconUIResource;
 import java.util.ArrayList;
 
+
+/**
+ * In this class I build the first version of each node's cpt(the full one from the xml file)
+ */
 public class CPT {
 
     public String name;
@@ -15,6 +18,7 @@ public class CPT {
         String[] valuesString = mainNode.getValues().split(" ");
         this.values = new ArrayList<Double>();
         this.columns = new ArrayList<String>();
+        //get all the values from the list
         for(int i =0; i < valuesString.length;i++)
         {
             values.add(Double.parseDouble(valuesString[i]));
@@ -29,6 +33,7 @@ public class CPT {
         outcomes.add(new ArrayList<String>());// for the current node
         this.columns.add(mainNode.getName());
         int countOutcomes =0;
+        //go over the lines to insert the right values in the list
         for(int i =outcomes.size()-1; i >=0;i--)
         {
             if(countOutcomes ==0)
@@ -38,11 +43,10 @@ public class CPT {
                 while(counter < this.values.size())
                 {
                     int amountOfOutcomes = mainNode.getOutcomes().size();
-                    int currentOutcomeIndex = counter%amountOfOutcomes;
-                    outcomes.get(i).add(mainNode.getOutcomes().get(counter%amountOfOutcomes));
+                    outcomes.get(i).add(mainNode.getOutcomes().get(counter%amountOfOutcomes));//here we switch outcome every row
                     counter++;
                 }
-                countOutcomes += mainNode.getOutcomes().size();
+                countOutcomes += mainNode.getOutcomes().size();//first addition to know when to switch outcomes
             }
             else
             {
@@ -57,9 +61,10 @@ public class CPT {
                     }
                     counter++;
                 }
-                countOutcomes *= amountOfOutcomes;
+                countOutcomes *= amountOfOutcomes;//multiply to know when to switch between outcomes
             }
         }
+        //convert the list to rowInCPT class
         this.rows = new ArrayList<rowInCPT>();
         for(int i =0; i < this.values.size();i++)
         {
@@ -71,6 +76,11 @@ public class CPT {
             this.rows.add(new rowInCPT(combination,this.values.get(i),this.columns));
         }
     }
+
+    /**
+     * @param name The name of the column
+     * @return The index of the column we got
+     */
 
     public int getIndexColumn(String name)
     {
@@ -84,6 +94,9 @@ public class CPT {
         return -1;
     }
 
+    /**
+     * Prints the cpt with all the names of the variables
+     */
     public void printCPT()
     {
         System.out.println("\nCPT of: "+ this.name);

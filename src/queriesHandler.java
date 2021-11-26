@@ -1,24 +1,34 @@
 import java.util.ArrayList;
-import java.util.Arrays;
 
+/**
+ * this class is the one that handl
+ */
 public class queriesHandler {
 
     String filename;
     ArrayList<String> queries = new ArrayList<String>();
 
+    /**
+     * a constructor for the handler
+     * @param filename the name of the txt files
+     * @param Queries the list of queries
+     */
     public queriesHandler(String filename, ArrayList<String> Queries) {
         this.filename = filename;
-        for (int i = 0; i < Queries.size(); i++) {
-            this.queries.add(Queries.get(i));
-
-        }
+        this.queries.addAll(Queries);
     }
 
+    /**
+     * this function handles all of our queries
+     * @param bn the network we will be working on
+     * @return the list of responses for each query
+     */
     public ArrayList<String> handle(BayesianNetwork bn) {
         ArrayList<String> responses = new ArrayList<String>();
-        String currentQuery = "";
-        for (int i = 0; i < queries.size(); i++) {
-            currentQuery = queries.get(i);
+        String currentQuery;
+        // go over each query
+        for (String query : queries) {
+            currentQuery = query;
             if (currentQuery.charAt(0) != 'P')//BayesBall query
             {
                 String[] toCheck = currentQuery.split("\\|");// splits source and dest to one size, and evidence to the other
@@ -39,11 +49,12 @@ public class queriesHandler {
                 } else {
                     responses.add("yes");
                 }
-            } else {
-                //P(B=T|J=T,M=T) A-E
+            }
+            else // probability query
+            {
                 String[] queryHiddenSplit = currentQuery.split(" ");
                 String[] hidden = new String[1];
-                if(queryHiddenSplit.length >1)
+                if (queryHiddenSplit.length > 1) // so we dont get null exception
                 {
                     hidden = queryHiddenSplit[1].split("-");
                 }
@@ -52,7 +63,7 @@ public class queriesHandler {
                 String Query = splitQueryEvidence[0];
                 String[] evidenceFirst = splitQueryEvidence[1].split("\\)");
                 String[] evidence = new String[1];
-                if(evidenceFirst.length > 0 )
+                if (evidenceFirst.length > 0) // so we dont get null exception
                 {
                     evidence = evidenceFirst[0].split(",");
 

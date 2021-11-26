@@ -1,6 +1,9 @@
 
 import java.util.ArrayList;
 
+/**
+ * We use this class to represent each node in our notebook
+ */
 public class EventNode {
     private String name;
     private ArrayList<String> outcomes;
@@ -9,26 +12,10 @@ public class EventNode {
     private String values;//one step before building cpt
     private CPT cpt;
 
-    public EventNode(String name, ArrayList<EventNode> parents, ArrayList<EventNode> childs, ArrayList<String> outcomes) {
-        this.name = name;
-        if (parents != null) {
-            for (int i = 0; i < parents.size(); i++) {
-                this.parents.add(new EventNode(parents.get(i)));
-            }
-        }
-        if (childs != null) {
-            for (int i = 0; i < childs.size(); i++) {
-                this.children.add(new EventNode(children.get(i)));
-            }
-        }
-        if (outcomes != null) {
-            for (int i = 0; i < outcomes.size(); i++) {
-                this.outcomes.add(outcomes.get(i));
-            }
-        }
-
-    }
-
+    /**
+     * This constructor creates an empty node
+     * @param name The name of the event
+     */
     public EventNode(String name) {
         this.name = name;
         this.parents = new ArrayList<EventNode>();
@@ -36,6 +23,10 @@ public class EventNode {
         this.outcomes = new ArrayList<String>();
     }
 
+    /**
+     * copy constructor for the event node
+     * @param other the other node
+     */
     public EventNode(EventNode other) {
         this.name = other.getName();
         this.parents = new ArrayList<EventNode>();
@@ -47,32 +38,39 @@ public class EventNode {
         for (int i = 0; i < other.children.size(); i++) {
             this.children.add(new EventNode(other.children.get(i)));
         }
-        for (int i = 0; i < other.outcomes.size(); i++) {
-            this.outcomes.add(other.outcomes.get(i));
-        }
+        this.outcomes.addAll(other.outcomes);
 
     }
 
+    /**
+     * in this function we build the initial cpt of the node
+     */
     public void BuildCPT() {
         this.cpt = new CPT(this);
     }
 
-    public void PrintCPT() {
-        this.cpt.printCPT();
-    }
-
+    /**
+     * @param parent the parent to add to the list of this node's parents
+     */
     public void addParent(EventNode parent) {
         this.parents.add(new EventNode(parent));
     }
 
+    /**
+     * @param child the child to add to this node's children
+     */
     public void addChild(EventNode child) {
         this.children.add(new EventNode(child));
     }
 
+    /**
+     * @param outcome outcome to add
+     */
     public void addOutcome(String outcome) {
         this.outcomes.add(outcome);
     }
 
+    // the next functions are getters and setters
     public String getValues() {
         return values;
     }
@@ -83,43 +81,6 @@ public class EventNode {
 
     public CPT getCPT() {
         return this.cpt;
-    }
-
-    public boolean parentContain(String event) {
-        for (int i = 0; i < this.parents.size(); i++) {
-            if (this.parents.get(i).getName().equals(event)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public ArrayList<String> getOutcomes() {
-        return outcomes;
-    }
-
-    public void setOutcomes(ArrayList<String> outcomes) {
-        this.outcomes = new ArrayList<String>();
-        for (int i = 0; i < outcomes.size(); i++) {
-            this.outcomes.add(outcomes.get(i));
-        }
-    }
-
-    public boolean childrenContain(String event) {
-        for (int i = 0; i < this.children.size(); i++) {
-            if (this.children.get(i).getName().equals(event)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public void removeKid(String name) {
-        for (EventNode node : this.children) {
-            if (node.getName().equals(name)) {
-                this.children.remove(node);
-            }
-        }
     }
 
     public String getName() {
@@ -138,27 +99,47 @@ public class EventNode {
         return parents;
     }
 
-    public void setParents(ArrayList<EventNode> parents) {
-        this.parents = new ArrayList<EventNode>();
-        for (int i = 0; i < parents.size(); i++) {
-            this.parents.add(new EventNode(parents.get(i)));
-        }
-    }
-
     public ArrayList<EventNode> getChildren() {
         ArrayList<EventNode> childs = new ArrayList<EventNode>();
-        for (int i = 0; i < this.children.size(); i++) {
-            childs.add(new EventNode(this.children.get(i)));
+        for (EventNode child : this.children) {
+            childs.add(new EventNode(child));
         }
         return childs;
     }
 
-    public void setChildren(ArrayList<EventNode> children) {
-        this.children = new ArrayList<EventNode>();
-        for (int i = 0; i < children.size(); i++) {
-            this.children.add(new EventNode(children.get(i)));
-        }
+
+    public ArrayList<String> getOutcomes() {
+        return outcomes;
     }
+
+
+    /**
+     * @param event the name of the event we want to check
+     * @return true if the event is in the parents list, false if it isn't
+     */
+    public boolean parentContain(String event) {
+        for (EventNode parent : this.parents) {
+            if (parent.getName().equals(event)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * @param event the name of the event we want to check
+     * @return true if the event is in the children list, false if it isn't
+     */
+    public boolean childrenContain(String event) {
+        for (EventNode child : this.children) {
+            if (child.getName().equals(event)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 
     @Override
     public String toString() {
