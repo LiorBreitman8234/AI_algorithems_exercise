@@ -1,10 +1,8 @@
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 
+/**
+ * This class represents the factor we get at the start, and after joining and eliminating variables
+ */
 public class Factor implements Comparable<Factor> {
 
     public String FactorOf;
@@ -15,8 +13,12 @@ public class Factor implements Comparable<Factor> {
     private ArrayList<Double> values;
     private ArrayList<String> columns;
 
-
-
+    /**
+     * Constructor for the cpt
+     * @param node the main node of the factor
+     * @param given our evidence for the factor
+     * @param count count of the factor
+     */
     public Factor(EventNode node, ArrayList<String> given, int count)
     {
         this.count = count;
@@ -29,10 +31,7 @@ public class Factor implements Comparable<Factor> {
         }
         this.columns.add(FactorOf);
         this.given = new ArrayList<String>();
-        for(int i =0; i < given.size();i++)
-        {
-            this.given.add(given.get(i));
-        }
+        this.given.addAll(given);
         //first lets copy all the rows
         this.rows = new ArrayList<rowInCPT>();
         for(int i =0; i < node.getCPT().rows.size();i++)
@@ -41,25 +40,22 @@ public class Factor implements Comparable<Factor> {
 
         }
         this.values = new ArrayList<Double>();
-        for(int i =0; i < node.getCPT().values.size();i++)
-        {
-            this.values.add(node.getCPT().values.get(i));
-        }
+        this.values.addAll(node.getCPT().values);
         String[] givenAtI = new String[1];
-        for(int i =0;i < given.size();i++)
-        {
+        for (String s : given) {
             try {
-                givenAtI = given.get(i).split("=");
-                chooseRows(givenAtI[0],givenAtI[1]);
-            }
-            catch (Exception e)
-            {
+                givenAtI = s.split("=");
+                chooseRows(givenAtI[0], givenAtI[1]);
+            } catch (Exception e) {
                 System.out.println("no evidence");
             }
 
         }
     }
 
+    /**
+     * empty constructor for join function
+     */
     public Factor()
     {
         this.columns = new ArrayList<String>();
@@ -68,13 +64,19 @@ public class Factor implements Comparable<Factor> {
         this.values = new ArrayList<Double>();
     }
 
-    public int eliminateTry(EventNode toEliminate)
+    /**
+     * in this function we get a node we want to eliminate, and count the amount of additions we did
+     * @param toEliminate the node we want to eliminate from the factor
+     * @return the amount of additions we did
+     */
+    public int eliminate(EventNode toEliminate)
     {
         ArrayList<rowInCPT> newRows = new ArrayList<rowInCPT>();
         ArrayList<Double> newValues = new ArrayList<Double>();
         int addCounter =0;
         //get all the columns except the one to eliminate, so we can check if the rows match
         ArrayList<String> commonColumns = new ArrayList<String>();
+        //add all the common columns for the new rows
         for(String column:this.columns)
         {
             if(!column.equals(toEliminate.getName()))
@@ -82,19 +84,20 @@ public class Factor implements Comparable<Factor> {
                 commonColumns.add(column);
             }
         }
+        //iterate over all the rows and get the ones that are similar
         for(rowInCPT firstRow:this.rows)
         {
             ArrayList<rowInCPT> rowsToMerge = new ArrayList<rowInCPT>();
             rowsToMerge.add(firstRow);
             for(rowInCPT secondRow:this.rows)
             {
-                boolean check = firstRow.rowsMatch(secondRow,this.columns);
+                boolean check = firstRow.rowsMatch(secondRow,this.columns);// so we dont take the same row by mistake
                 if(!check)
                 {
                     if(firstRow.rowsMatch(secondRow,commonColumns))
                     {
                         rowsToMerge.add(secondRow);
-                        if(rowsToMerge.size() == toEliminate.getOutcomes().size())
+                        if(rowsToMerge.size() == toEliminate.getOutcomes().size())//merge all the rows needed
                         {
                             ArrayList<String> columnValues = new ArrayList<String>();
                             for(String column:commonColumns)
@@ -106,7 +109,7 @@ public class Factor implements Comparable<Factor> {
                                 value += rowInCPT.getValue();
                             }
                             rowInCPT newRow = new rowInCPT(columnValues,value,commonColumns);
-                            if(!newRows.contains(newRow))
+                            if(!newRows.contains(newRow))//check if we didn't add this row already
                             {
                                 newRows.add(newRow);
                                 newValues.add(newRow.getValue());
@@ -126,54 +129,11 @@ public class Factor implements Comparable<Factor> {
 
     }
 
-
-    public int eliminate(String toEliminate)
-    {
-        ArrayList<rowInCPT> newRows = new ArrayList<rowInCPT>();
-        ArrayList<Double> newValues = new ArrayList<Double>();
-        int addCounter =0;
-        //get all the columns except the one to eliminate, so we can check if the rows match
-        ArrayList<String> commonColumns = new ArrayList<String>();
-        for(String column:this.columns)
-        {
-            if(!column.equals(toEliminate))
-            {
-                commonColumns.add(column);
-            }
-        }
-        for(rowInCPT firstRow:this.rows)
-        {
-            for(rowInCPT secondRow:this.rows)
-            {
-                boolean check = firstRow.rowsMatch(secondRow,this.columns);
-                if(!check)
-                {
-                    if(firstRow.rowsMatch(secondRow,commonColumns))
-                    {
-                        ArrayList<String> columnValues = new ArrayList<String>();
-                        for(String column:commonColumns)
-                        {
-                            columnValues.add(firstRow.getColumnValues().get(firstRow.columnIndex(column)));
-                        }
-                        double value = firstRow.getValue() + secondRow.getValue();
-                        rowInCPT newRow = new rowInCPT(columnValues,value,commonColumns);
-                        if(!newRows.contains(newRow))
-                        {
-                            newRows.add(newRow);
-                            newValues.add(newRow.getValue());
-                            addCounter++;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-        this.rows = newRows;
-        this.values = newValues;
-        this.columns = commonColumns;
-        return addCounter;
-    }
-
+    /**
+     * this function filters rows according to the given and state we got 
+     * @param name the name of the given variable
+     * @param state the state of the given variable (T/F,v1/v2/v3)
+     */
     public void chooseRows(String name, String state)
     {
         //initialize new rows with empty arrayLists and new values arrayList
@@ -204,6 +164,8 @@ public class Factor implements Comparable<Factor> {
             }
         }
     }
+    
+    
     public void printFactor()
     {
         System.out.println("\nFactor of node: "+ this.FactorOf);
@@ -224,7 +186,11 @@ public class Factor implements Comparable<Factor> {
         }
     }
 
-    public int lexicographicSum()
+    /**
+     * in this function we count the ascii sum of the columns to know how to sort
+     * @return the ascii sum of the columns
+     */
+    public int asciiSum()
     {
         int sum = 0;
         for(int i =0; i < this.columns.size();i++)
@@ -238,10 +204,10 @@ public class Factor implements Comparable<Factor> {
         }
         return sum;
     }
-    public int getCount() {
-        return count;
-    }
 
+    /**
+     * @param row the row we want to add to the factor
+     */
     public void addRow(rowInCPT row)
     {
         if(row!=null)
@@ -251,6 +217,7 @@ public class Factor implements Comparable<Factor> {
         }
     }
 
+    // the next function are getters and setters
     public ArrayList<String> getColumns() {
         return columns;
     }
@@ -264,10 +231,6 @@ public class Factor implements Comparable<Factor> {
     }
 
 
-    public ArrayList<String> getGiven() {
-        return given;
-    }
-
     public void setGiven(ArrayList<String> given) {
         this.given = given;
     }
@@ -276,18 +239,13 @@ public class Factor implements Comparable<Factor> {
         return rows;
     }
 
-    public void setRows(ArrayList<rowInCPT> rows) {
-        this.rows = rows;
-    }
 
-    public ArrayList<Double> getValues() {
-        return values;
-    }
-
-    public void setValues(ArrayList<Double> values) {
-        this.values = values;
-    }
-
+    /**
+     * in this function we compare 2 factors, first based on the amount of rows
+     * and then by the ascii sum of the columns
+     * @param o the other factor we want to compare to
+     * @return 1 if we are bigger, 01 if the other is bigger, 1 if equal
+     */
     @Override
     public int compareTo(Factor o) {
         if(this.rows.size() > o.getRows().size())
@@ -298,11 +256,11 @@ public class Factor implements Comparable<Factor> {
         {
             return -1;
         }
-        if(this.lexicographicSum() > o.lexicographicSum())
+        if(this.asciiSum() > o.asciiSum())
         {
             return 1;
         }
-        if(this.lexicographicSum() < o.lexicographicSum())
+        if(this.asciiSum() < o.asciiSum())
         {
             return -1;
         }

@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -9,9 +8,18 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
-
+/**
+ * in This class I will handle whatever is related to files
+ * read the net from the xml files
+ * read the net and queries from text file
+ * write the answers to a text files
+ */
 public class fileHandler {
 
+    /**
+     * @param filename the text file with the net name and queries
+     * @return the handler that will handle all the queries
+     */
     public static queriesHandler readTXT(String filename)
     {
         ArrayList<String> queries = new ArrayList<String>();
@@ -40,11 +48,15 @@ public class fileHandler {
         {
             e.printStackTrace();
         }
-        queriesHandler input = new queriesHandler(xmlFile,queries);
-        return input;
+        return new queriesHandler(xmlFile,queries);
 
     }
 
+    /**
+     * This function will read all the rows from the xml files and sort them correctly
+     * @param filename the xml file name
+     * @return a list of the information we need to build our network
+     */
     public static ArrayList<nodeBuilderHelper> readXML(String filename)
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -91,14 +103,17 @@ public class fileHandler {
         return nodes_preview;
     }
 
+    /**
+     * this function will write all the responses to the queries to a text file
+     * @param response the list of responses
+     */
     public static void writeToTxt(ArrayList<String> response)
     {
         try
         {
             FileWriter writer = new FileWriter("output.txt");
-            for(int i =0; i < response.size();i++)
-            {
-                writer.write(response.get(i) + "\n");
+            for (String s : response) {
+                writer.write(s + "\n");
             }
             writer.close();
         }

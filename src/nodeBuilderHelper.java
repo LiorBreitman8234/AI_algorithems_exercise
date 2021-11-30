@@ -1,5 +1,8 @@
 import java.util.Arrays;
 
+/**
+ * this class will help me move the information from the xml file to the function that will build my network
+ */
 public class nodeBuilderHelper {
 
     String name;
@@ -27,15 +30,8 @@ public class nodeBuilderHelper {
         return given;
     }
 
-    public void setGiven(String[] given) {
-        this.given =  Arrays.copyOf(given, given.length);
-    }
-
     public String[] getOutcomes() {
         return outcomes;
     }
 
-    public void setOutcomes(String[] outcomes) {
-        this.outcomes = Arrays.copyOf(outcomes, outcomes.length);
-    }
 }

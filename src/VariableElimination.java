@@ -1,19 +1,23 @@
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 
+/**
+ * in this class we will do the main function for the variable elimination
+ */
 public class VariableElimination {
 
     int count = 1;
     int countMult = 0;
     int countAdd = 0;
     private ArrayList<String> Eliminated;
-    private BayesianNetwork network;
-    private ArrayList<Factor> factors;
-    private String[] evidence;
-    private String[] hidden;
-    private String query;
+    private final BayesianNetwork network;
+    private final ArrayList<Factor> factors;
+    private final String[] evidence;
+    private final String[] hidden;
+    private final String query;
 
     public VariableElimination(BayesianNetwork network, String query, String[] evidence, String[] hidden)
     {
@@ -24,33 +28,23 @@ public class VariableElimination {
         this.evidence = new String[evidence.length];
         this.hidden = new String[hidden.length];
         ArrayList<String> given = new ArrayList<String>();
-        for(int i =0; i < evidence.length;i++)
-        {
-            given.add(evidence[i]);
-        }
-        for(int i =0; i < evidence.length;i++)
-        {
-            this.evidence[i] = evidence[i];
-        }
-        for(int i =0; i <hidden.length;i++)
-        {
-            this.hidden[i] =hidden[i];
-        }
+        given.addAll(Arrays.asList(evidence));
+        System.arraycopy(evidence, 0, this.evidence, 0, evidence.length);
+        System.arraycopy(hidden, 0, this.hidden, 0, hidden.length);
     }
 
-    public VariableElimination()
-    {
-        this.hidden = new String[0];
-    }
-
-
+    /**
+     * this function is the main function for the algorithm
+     * from here we call to al lour functions
+     * @return the list of results(probability, addition, multiplication)
+     */
     public ArrayList<Double> VariableEliminationAlgo()
     {
 
         ArrayList<Double> response = new ArrayList<Double>();
         String nodeOfQuery = query.split("=")[0];
         ArrayList<String> evidenceNode = new ArrayList<String>();
-        for (String value : this.evidence) {
+        for (String value : this.evidence) {//check if there is any evidence
             try
             {
                 String evidenceName = value.split("=")[0];
@@ -62,6 +56,7 @@ public class VariableElimination {
                 System.out.println("no evidence");
             }
         }
+        // we will do this check before the algorithm to see if the answer is already in the cpt
         if(inCPT(query,evidenceNode,hidden))
         {
             EventNode node = this.network.nodesInNetwork.get(this.network.containsAndIndex(query.split("=")[0]));
@@ -75,13 +70,13 @@ public class VariableElimination {
         }
         ArrayList<String> irrelevantNode = new ArrayList<String>();
         ArrayList<String> newHidden = new ArrayList<String>();
-        GetIRelevantFactors(nodeOfQuery, evidenceNode, irrelevantNode);
+        GetIRelevantFactors(nodeOfQuery, evidenceNode, irrelevantNode);//get all the factors that aren't relevant
         for (String s : this.hidden) {
             if (!irrelevantNode.contains(s)) {
                 newHidden.add(s);
             }
         }
-        for(EventNode node: network.nodesInNetwork)
+        for(EventNode node: network.nodesInNetwork)//create factors for the relevant nodes
         {
             if(!irrelevantNode.contains(node.getName()))
             {
@@ -104,6 +99,7 @@ public class VariableElimination {
             }
         }
 
+        //start the algorithm, for all the hidden that are relevant
         for (String currHidden : newHidden) {
             ArrayList<Factor> relevantFactors = new ArrayList<Factor>();
             getRelevantFactors(irrelevantNode, currHidden, relevantFactors);
@@ -111,7 +107,7 @@ public class VariableElimination {
             {
                 continue;
             }
-            while (relevantFactors.size() != 1) {
+            while (relevantFactors.size() != 1) {//if there is more than 1 relevant factors, join them
                 sort(relevantFactors);
                 Factor f = join(relevantFactors.get(0),relevantFactors.get(1));
                 this.factors.remove(relevantFactors.get(0));
@@ -120,12 +116,12 @@ public class VariableElimination {
                 relevantFactors.remove(0);
                 relevantFactors.add(0,f);
             }
-            countAdd += relevantFactors.get(0).eliminateTry(this.network.nodesInNetwork.get(this.network.containsAndIndex(currHidden)));
+            countAdd += relevantFactors.get(0).eliminate(this.network.nodesInNetwork.get(this.network.containsAndIndex(currHidden)));//eliminate the hidden variable
             this.factors.add(relevantFactors.get(0));
         }
         ArrayList<Factor> relevantFactors = new ArrayList<Factor>();
         getRelevantFactors(irrelevantNode,nodeOfQuery,relevantFactors);
-        while (relevantFactors.size() != 1) {
+        while (relevantFactors.size() != 1) {//join factors for the query variable
             sort(relevantFactors);
             Factor f = join(relevantFactors.get(0),relevantFactors.get(1));
             this.factors.remove(relevantFactors.get(0));
@@ -135,6 +131,7 @@ public class VariableElimination {
             relevantFactors.add(0,f);
         }
         double total = 0;
+        //after we are left with 1 factor, normalize it
         for(rowInCPT row:relevantFactors.get(0).getRows())
         {
             if(total != 0)
@@ -158,6 +155,7 @@ public class VariableElimination {
                 endValue = row.getValue();
             }
         }
+        //round the number and return everything
         NumberFormat nf = new DecimalFormat("#0.00000");
         endValue = Double.parseDouble(nf.format(endValue));
         response.add(endValue);
@@ -166,6 +164,9 @@ public class VariableElimination {
         return response;
     }
 
+    /**
+     * This function updated the list of relevant factors to the node we are searching for
+     */
     private void getRelevantFactors(ArrayList<String> irrelevantNode, String currHidden, ArrayList<Factor> relevantFactors) {
         for (Factor factor : this.factors) {
             if (factor.getColumns().contains(currHidden)) {
@@ -185,6 +186,9 @@ public class VariableElimination {
         }
     }
 
+    /**
+     * in this function we get all the irrelevant factors to our query
+     */
     private void GetIRelevantFactors(String nodeOfQuery, ArrayList<String> evidenceNode, ArrayList<String> irrelevantNode) {
         for(EventNode node:network.nodesInNetwork)
         {
@@ -225,24 +229,18 @@ public class VariableElimination {
     }
 
 
-    public ArrayList<Factor> getFactors(String event)
-    {
-        ArrayList<Factor> factors = new ArrayList<Factor>();
-        for(Factor f : this.factors)
-        {
-            if((f.getColumns().contains(event) || f.FactorOf.equals(event)) && f.getRows().size() != 1)
-            {
-                factors.add(f);
-            }
-        }
-        return factors;
-    }
-
+    /**
+     * in this function we sort the list of factors by the parameters we set in the factors class
+     * @param factors the list of factors to sort
+     */
     public void sort(ArrayList<Factor> factors)
     {
         Collections.sort(factors);
     }
 
+    /**
+     * this function get the factors we want to joing and returns the new factor we get after joining
+     */
     public Factor join(Factor f1, Factor f2)
     {
         ArrayList<String> commonColumns = new ArrayList<String>();
@@ -254,17 +252,15 @@ public class VariableElimination {
             }
         }
         ArrayList<String> given = new ArrayList<String>();
-        for(int i =0; i < this.evidence.length;i++)
-        {
-            given.add(evidence[i]);
-        }
+        given.addAll(Arrays.asList(evidence).subList(0, this.evidence.length));
         Factor newFactor = new Factor();
         newFactor.setGiven(given);
+        //check who is smaller to iterate on him
         if(f1.compareTo(f2) > 0)
         {
-            for(rowInCPT firstRow: f1.getRows())
+            for(rowInCPT firstRow: f2.getRows())
             {
-                for(rowInCPT secondRow:f2.getRows())
+                for(rowInCPT secondRow:f1.getRows())
                 {
                     if(firstRow.rowsMatch(secondRow,commonColumns))
                     {
@@ -276,9 +272,9 @@ public class VariableElimination {
         }
         else
         {
-            for(rowInCPT firstRow: f2.getRows())
+            for(rowInCPT firstRow: f1.getRows())
             {
-                for(rowInCPT secondRow:f1.getRows())
+                for(rowInCPT secondRow:f2.getRows())
                 {
                     if(firstRow.rowsMatch(secondRow,commonColumns))
                     {
@@ -295,6 +291,9 @@ public class VariableElimination {
         return newFactor;
     }
 
+    /**
+     * in this function we get 2 rows and join them
+     */
     private rowInCPT joinRows(rowInCPT firstRow, rowInCPT secondRow) {
         ArrayList<String> columns = new ArrayList<String>();
         ArrayList<String> columnValues = new ArrayList<String>();
@@ -314,15 +313,18 @@ public class VariableElimination {
                 columnValues.add(secondRow.getColumnValues().get(i));
             }
         }
-        //NumberFormat nf = new DecimalFormat("#0.00000");
-        //nf.setRoundingMode(RoundingMode.FLOOR);
-        //double value = Double.parseDouble(nf.format(firstRow.getValue() * secondRow.getValue()));
         double value = firstRow.getValue()*secondRow.getValue();
         this.countMult++;
-        rowInCPT row = new rowInCPT(columnValues,value,columns);
-        return row;
+        return new rowInCPT(columnValues,value,columns);
     }
 
+    /**
+     * this function checks if the query we got asked is already present in the cpt
+     * @param Query the query itself
+     * @param evidence the evidence we are given
+     * @param hidden the hidden variables
+      * @return if the answer is in the cpt, return true, else , return false
+     */
     public boolean inCPT(String Query, ArrayList<String> evidence,String[] hidden)
     {
         EventNode toCheck = this.network.nodesInNetwork.get(network.containsAndIndex(Query.split("=")[0]));
